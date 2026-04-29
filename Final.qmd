@@ -1,0 +1,587 @@
+---
+title: "Final Project"
+format:
+    html
+jupyter: python3
+---
+
+```{python}
+#| echo: false
+#| #import libaries
+import requests
+import pandas as pd
+import json
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import time
+from plotnine import *
+```
+
+
+## API calls
+Importing 2022 data (training data)
+```{python}
+#| echo: false
+# ESPN API configuration
+BASE_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/"
+
+# Extract NFL 2022 season games
+games = []
+url = f"{BASE_URL}scoreboard"
+
+params = {
+    "limit": 1000,
+    "dates": 2022
+}
+
+response = requests.get(url, params = params)
+
+data = response.json()
+
+for event in data["events"]:
+    teams = event["competitions"][0]["competitors"]
+
+    home_team=""
+    away_team=""
+
+    for team in teams:
+        if team["homeAway"] == "home":
+            home_team = team["team"]["id"]
+        else:
+            away_team = team["team"]["id"]
+
+    games.append({
+        "id": event['id'],
+        "name": event["name"],
+        "home_team": home_team,
+        "away_team": away_team,
+        "date": event["date"]
+    })
+
+df_games_2022 = pd.DataFrame(games)
+```
+
+```{python}
+#| echo: false
+#df_games_2022.head(50)
+#df_games_2022.info()
+```
+
+```{python}
+#| echo: false
+#Extract Play-by-play
+# plays = []
+# for gid in df_games_2022['id']:
+#     url = f"https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/{gid}/competitions/{gid}/plays"
+
+#     params = {
+#         "limit": 300
+#     }
+
+#     response = requests.get(url, params = params)
+
+#     data = response.json()
+
+#     for play in data.get("items",[]):
+#         offense_team = None
+#         defense_team = None
+#         for team in play.get('teamParticipants',[]):
+#             if team.get('type') == 'offense':
+#                 offense_team = team.get('id')
+
+#             elif team.get('type') == 'defense':
+#                 defense_team = team.get('id')
+
+
+#         plays.append({
+#             "gid": gid,
+#             "pid": play.get('id'),
+#             "play_action": play.get("text", ""),
+#             "quarter": play.get('period',{}).get('number'),           
+#             "time_remaining": play.get('clock',{}).get('value'),
+#             "down": play.get('start', {}).get('down'),
+#             "yards_to_go": play.get('start',{}).get('distance'),
+#             "yardsToEndzone": play.get('start', {}).get('yardsToEndzone'),
+#             "yards_gained": play.get("statYardage"),
+#             "home_score" : play.get("homeScore"),
+#             "away_score": play.get('awayScore'),
+#             "offense_team": offense_team,
+#             "defense_team": defense_team
+
+#         })
+
+#         time.sleep(0.1)
+
+#     print(f"{gid}")
+
+# df_plays_2022 = pd.DataFrame(plays)
+```
+
+```{python}
+#| echo: false
+# df_plays_2022.to_csv("nfl_plays_2022.csv", index = False)
+```
+
+
+Importing 2023 data (testing data)
+```{python}
+#| echo: false
+# ESPN API configuration
+BASE_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/"
+
+# Extract NFL 2023 season games
+games = []
+url = f"{BASE_URL}scoreboard"
+
+params = {
+    "limit": 1000,
+    "dates": 2023
+}
+
+response = requests.get(url, params = params)
+
+data = response.json()
+
+for event in data["events"]:
+    teams = event["competitions"][0]["competitors"]
+
+    home_team=""
+    away_team=""
+
+    for team in teams:
+        if team["homeAway"] == "home":
+            home_team = team["team"]["id"]
+        else:
+            away_team = team["team"]["id"]
+
+    games.append({
+        "id": event['id'],
+        "name": event["name"],
+        "home_team": home_team,
+        "away_team": away_team,
+        "date": event["date"],
+    })
+
+df_games_2023 = pd.DataFrame(games)
+```
+
+```{python}
+#| echo: false
+# df_games_2023.head(50)
+# df_games_2023.info()
+```
+
+```{python}
+#| echo: false
+#Extract Play-by-play
+# plays = []
+# for gid in df_games_2023['id']:
+#     url = f"https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/{gid}/competitions/{gid}/plays"
+
+#     params = {
+#         "limit": 300
+#     }
+
+#     response = requests.get(url, params = params)
+
+#     data = response.json()
+
+#     for play in data.get("items",[]):
+#         offense_team = None
+#         defense_team = None
+#         for team in play.get('teamParticipants',[]):
+#             if team.get('type') == 'offense':
+#                 offense_team = team.get('id')
+
+#             elif team.get('type') == 'defense':
+#                 defense_team = team.get('id')
+
+
+#         plays.append({
+#             "gid": gid,
+#             "pid": play.get('id'),
+#             "play_action": play.get("text", ""),
+#             "quarter": play.get('period',{}).get('number'),           
+#             "time_remaining": play.get('clock',{}).get('value'),
+#             "down": play.get('start', {}).get('down'),
+#             "yards_to_go": play.get('start',{}).get('distance'),
+#             "yardsToEndzone": play.get('start', {}).get('yardsToEndzone'),
+#             "yards_gained": play.get("statYardage"),
+#             "home_score" : play.get("homeScore"),
+#             "away_score": play.get('awayScore'),
+#             "offense_team": offense_team,
+#             "defense_team": defense_team
+
+#         })
+
+#         time.sleep(0.1)
+
+#     print(f"{gid}")
+
+# df_plays_2023 = pd.DataFrame(plays)
+```
+
+ ```{python}
+# #| echo: false
+# df_plays_2023.to_csv("nfl_plays_2023.csv", index = False)
+```
+
+## Data Cleaning & Wrangling
+
+```{python}
+train_data = pd.read_csv("data/nfl_plays_2022.csv")
+test_data = pd.read_csv("data/nfl_plays_2023.csv")
+
+df_games_2022["id"] = df_games_2022["id"].astype(str)
+df_games_2023["id"] = df_games_2023["id"].astype(str)
+
+train_data["gid"] = train_data["gid"].astype(str)
+test_data["gid"] = test_data["gid"].astype(str)
+
+df_games_2022 = df_games_2022[df_games_2022["id"].isin(set(train_data["gid"]))]
+df_games_2023 = df_games_2023[df_games_2023["id"].isin(set(test_data["gid"]))]
+```
+
+
+Train data
+```{python}
+#| echo: false
+#train_data.describe() #check for extreme data
+missing = train_data.isna().sum().to_frame("n_missing")
+missing["pct_missing"] = (missing['n_missing']/len(train_data)).round(4)
+#missing.sort_values("pct_missing", ascending=False).head(20) #check for missing data
+```
+
+```{python}
+#| echo: false
+train_data_a = train_data[train_data['down']==0]
+#display(train_data_a)
+
+#shows that when downs = 0 => kickoff/start of game
+
+train_data_b = train_data[train_data['quarter']==0]
+#display(train_data_b)
+
+#shows that when quarter = 0 => start of game
+
+train_data_c = train_data[train_data['offense_team'].isna()]
+#display(train_data_c)
+
+#shows that when offense_team = 0 => start/end of quarter or game
+
+train_data_d = train_data[train_data['defense_team'].isna()]
+#display(train_data_d)
+
+#shows that when defense_team = 0 => start/end of quarter or game
+```
+
+```{python}
+#| echo: false
+# check if quarter is either 1, 2, 3, 4
+train_data = train_data[train_data['quarter'].isin([1,2,3,4,5])]
+# check if down is 1,2,3,4
+train_data = train_data[train_data['down'].isin([1,2,3,4])]
+# offense and defense team is not null
+train_data = train_data.dropna(subset=["offense_team", "defense_team"])
+
+#train_data.info()
+```
+
+Test data
+
+```{python}
+#| echo: false
+#test_data.describe() #check for extreme data
+missing = test_data.isna().sum().to_frame("n_missing")
+missing["pct_missing"] = (missing['n_missing']/len(test_data)).round(4)
+#missing.sort_values("pct_missing", ascending=False).head(20) #check for missing data
+```
+
+```{python}
+#| echo: false
+test_data_a = test_data[test_data['down']==0]
+#display(test_data_a)
+
+#shows that when downs = 0 => kickoff/start of game
+
+test_data_b = test_data[test_data['quarter']==0]
+#display(test_data_b)
+
+#shows that when quarter = 0 => start of game
+
+test_data_c = test_data[test_data['offense_team'].isna()]
+#display(test_data_c)
+
+#shows that when offense_team = 0 => start/end of quarter or game
+
+test_data_d = test_data[test_data['defense_team'].isna()]
+#display(test_data_d)
+
+#shows that when defense_team = 0 => start/end of quarter or game
+```
+
+```{python}
+#| echo: false
+# check if quarter is either 1, 2, 3, 4
+test_data = test_data[test_data['quarter'].isin([1,2,3,4,5])]
+# check if down is 1,2,3,4
+test_data = test_data[test_data['down'].isin([1,2,3,4])]
+# offense and defense team is not null
+test_data = test_data.dropna(subset=["offense_team", "defense_team"])
+
+#test_data.info()
+```
+
+
+## Feature Engineering
+```{python}
+#| echo: false
+#Feature Engineering
+#Adding variable of time remaning in game instead of in quarter
+train_data["gametime_remaining"] = np.where(train_data['quarter']<=4, (4-train_data['quarter'])*900 + train_data['time_remaining'], np.nan)
+
+#Adding Score Difference relative to home team
+train_data["score_diff"] = (train_data["home_score"] - train_data['away_score'])
+
+#train_data.info()
+#train_data.describe()
+```
+
+```{python}
+train_data["offense_team"] = train_data["offense_team"].astype(int).astype(str)
+train_data["defense_team"] = train_data["defense_team"].astype(int).astype(str)
+
+#group train data by game id and take the maximum home team's score and away's team score
+win_or_lose_2022 = train_data.groupby("gid").agg({"home_score":"max", "away_score":"max"}).reset_index()
+# 1 indicates home team scores higher and 0 otherwise
+win_or_lose_2022["home_wins"] = (win_or_lose_2022["home_score"] > win_or_lose_2022["away_score"]).astype(int) 
+
+win_or_lose_2022 = win_or_lose_2022.merge(df_games_2022[["id", "home_team", "away_team"]], left_on ="gid", right_on="id")
+
+train_data = train_data.merge(win_or_lose_2022[["gid", "home_wins"]], on="gid")
+
+games_outcome_2022 =[]
+for _, row in win_or_lose_2022.iterrows():
+    if row["home_wins"] == 1:
+        games_outcome_2022.append((row["home_team"], 1))
+        games_outcome_2022.append((row["away_team"], 0))
+    else:
+        games_outcome_2022.append((row["home_team"], 0))
+        games_outcome_2022.append((row["away_team"], 1))
+
+games_outcome_2022_df = pd.DataFrame(games_outcome_2022, columns=['team', 'win'])
+
+team_strength = games_outcome_2022_df.groupby("team")["win"].mean().reset_index()
+
+train_data = train_data.merge(team_strength, left_on="offense_team", right_on="team", how = "left").rename(columns={"win": "offense_strength"}).drop(columns=["team"])
+
+train_data = train_data.merge(team_strength, left_on="defense_team", right_on="team", how = "left").rename(columns={"win": "defense_strength"}).drop(columns=["team"])
+```
+
+
+## Feature Engineering
+```{python}
+#| echo: false
+#Feature Engineering
+#Adding variable of time remaning in game instead of in quarter
+test_data["gametime_remaining"] = np.where(test_data['quarter']<=4, (4-test_data['quarter'])*900 + test_data['time_remaining'], np.nan)
+
+#Adding Score Difference relative to home team
+test_data["score_diff"] = (test_data["home_score"] - test_data['away_score'])
+
+#test_data.info()
+#test_data.describe()
+```
+
+```{python}
+
+test_data["offense_team"] = test_data["offense_team"].astype(int).astype(str)
+test_data["defense_team"] = test_data["defense_team"].astype(int).astype(str)
+
+#group train data by game id and take the maximum home team's score and away's team score
+win_or_lose_2023 = test_data.groupby("gid").agg({"home_score":"max", "away_score":"max"}).reset_index()
+# 1 indicates home team scores higher and 0 otherwise
+win_or_lose_2023["home_wins"] = (win_or_lose_2023["home_score"] > win_or_lose_2023["away_score"]).astype(int) 
+
+win_or_lose_2023 = win_or_lose_2023.merge(df_games_2023[["id", "home_team", "away_team"]], left_on ="gid", right_on="id")
+
+test_data = test_data.merge(win_or_lose_2023[["gid", "home_wins"]], on="gid")
+
+test_data = test_data.merge(team_strength, left_on="offense_team", right_on="team", how = "left").rename(columns={"win": "offense_strength"}).drop(columns=["team"])
+
+test_data = test_data.merge(team_strength, left_on="defense_team", right_on="team", how = "left").rename(columns={"win": "defense_strength"}).drop(columns=["team"])
+```
+
+```{python}
+# train_data.to_csv("train_data.csv", index = False)
+# test_data.to_csv("test_data.csv", index = False)
+```
+
+### MODELS
+```{python}
+features = ['gametime_remaining',"quarter", 'down', 'yards_to_go', "yardsToEndzone", "offense_strength", "defense_strength", "score_diff"]
+
+X_train = train_data[features]
+y_train = train_data['home_wins']
+
+X_test = test_data[features]
+y_test = test_data["home_wins"]
+```
+
+```{python}
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import RandomizedSearchCV
+
+param_grid = {
+    "max_features": ['sqrt', 1/3, 0.5],
+    "min_samples_leaf" : [1, 5, 10]
+}
+
+rf = RandomForestClassifier(
+    n_estimators=200, random_state=65, n_jobs =-1
+)
+cv_rf = RandomizedSearchCV(
+    rf, param_grid, cv=5, n_iter=10, n_jobs=-1,
+    scoring="roc_auc"
+)
+
+cv_rf.fit(X_train, y_train)
+print(f"Best params: "
+      f"{cv_rf.best_params_}")
+
+```
+
+```{python}
+from xgboost import XGBClassifier
+
+param_dist = {
+    'max_depth':     [4,6,8],
+    'learning_rate': [0.05, 0.1, 0.5],
+    'reg_lambda':    [0.1, 1, 10],
+    'reg_alpha':     [0, 0.1, 1],
+}
+
+xgb = XGBClassifier(
+    n_estimators=200, 
+    random_state=65,
+    n_jobs=-1
+ )
+
+xgb_search = RandomizedSearchCV(
+    estimator=xgb,
+    param_distributions=param_dist,
+    n_iter=10 ,  
+    cv=5,  
+    scoring= 'roc_auc', 
+    random_state=65,
+    n_jobs=-1,
+    verbose=1
+ )
+
+xgb_search.fit(X_train, y_train) 
+
+best_params_xgb = xgb_search.best_params_ 
+print('Best params:', best_params_xgb)
+```
+
+
+```{python}
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, confusion_matrix, ConfusionMatrixDisplay
+best_params_rf = cv_rf.best_params_
+
+best_rf = RandomForestClassifier(
+    **best_params_rf, n_estimators = 200, random_state=65, n_jobs=-1
+)
+
+best_rf.fit(X_train, y_train)
+
+y_pred_rf = best_rf.predict(X_test)
+y_prob_rf = best_rf.predict_proba(X_test)[:,1]
+
+rf_test_acc = accuracy_score(y_test, y_pred_rf)
+rf_test_f1 = f1_score(y_test, y_pred_rf)
+rf_test_auc = roc_auc_score(y_test, y_prob_rf)
+
+print(f"Random Forest test accuracy: {rf_test_acc}")
+print(f"Random Forest test F1-score: {rf_test_f1}")
+print(f"Random Forest test AUC: {rf_test_auc}")
+
+cm = confusion_matrix(y_test, y_pred_rf)
+fig, ax = plt.subplots(figsize=(10, 8))
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Loss", "Win"])
+disp.plot(ax=ax, cmap='Blues', xticks_rotation=45)
+plt.title("Confusion Matrix - Random Forest Classification")
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+rf_importances = best_rf.feature_importances_
+
+imp_df_rf = pd.DataFrame({
+    'feature': features,
+    'importance': rf_importances
+}).sort_values('importance')
+
+(
+    ggplot(imp_df_rf, aes(x='feature', y = 'importance')) +
+    geom_col() +
+    coord_flip()
+)
+```
+
+```{python}
+best_xgb = XGBClassifier(
+    **best_params_xgb, n_estimators = 200, random_state=65, n_jobs=-1
+)
+
+best_xgb.fit(X_train, y_train)
+
+y_pred_xgb = best_xgb.predict(X_test)
+y_prob_xgb = best_xgb.predict_proba(X_test)[:,1]
+
+xgb_test_acc = accuracy_score(y_test, y_pred_xgb)
+xgb_test_f1 = f1_score(y_test, y_pred_xgb)
+xgb_test_auc = roc_auc_score(y_test, y_prob_xgb)
+
+print(f"XGBoost test accuracy: {xgb_test_acc}")
+print(f"XGBoost test F1-score: {xgb_test_f1}")
+print(f"XGBoost test AUC: {xgb_test_auc}")
+
+cm_xgb = confusion_matrix(y_test, y_pred_xgb)
+fig, ax = plt.subplots(figsize=(10, 8))
+disp = ConfusionMatrixDisplay(confusion_matrix=cm_xgb, display_labels=["Loss", "Win"])
+disp.plot(ax=ax, cmap='Blues', xticks_rotation=45)
+plt.title("Confusion Matrix - XGBoost Classification")
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+xgb_importances = best_xgb.feature_importances_
+
+imp_df_xgb = pd.DataFrame({
+    'feature': features,
+    'importance': xgb_importances
+}).sort_values('importance')
+
+(
+    ggplot(imp_df_xgb, aes(x='feature', y = 'importance')) +
+    geom_col() +
+    coord_flip()
+)
+```
+
+
+```{python}
+comparison_c = pd.DataFrame({
+    'Model': ['Random Forest', "XGBoost"],
+    'Test Accuracy': [rf_test_acc, xgb_test_acc],
+    'Test Misclassification Error': [1-rf_test_acc, 1-xgb_test_acc],
+    'Test F1-Score': [rf_test_f1, xgb_test_f1],
+    'Test AUC': [rf_test_auc, xgb_test_auc]
+})
+
+print(comparison_c.to_string(index=False))
+```

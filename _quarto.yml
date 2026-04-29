@@ -1,0 +1,19 @@
+project:
+  type: website
+  output-dir: "."
+
+website:
+  title: "My Website"
+  navbar:
+    left:
+      - icon: fa-home
+        href: index.qmd
+  page-footer:
+    center: "Copyright &copy; 2026 Shannon Tanoto"
+
+format:
+  html:
+    theme: cosmo
+    highlight-style: textmate
+    include-after-body: footer.html
+    css: styles.css

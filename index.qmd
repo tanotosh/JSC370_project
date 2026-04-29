@@ -1,0 +1,161 @@
+---
+title: "Visualization"
+format:
+    html: 
+        embed-resources: true
+---
+
+## Project Description
+The aim of this project is to predict the win probability of an NFL (National Football League) team given the current game statistics. Key features include field position, time remaining, score difference. Additionaly, our model will take into account the offensive and defensive team strengths based on historical performance. Theses variables are the foundations for training a machine learning model that estimates the win probability on a play-by-play basis during an NFL game.
+
+**Download the report:** <https://github.com/tanotosh/JSC370_project.git>
+
+**GITHUB LINK:** <https://github.com/tanotosh/JSC370_project.git>
+
+
+**INTERACTIVE VISUALIZATIONS: (HW5 with captions, brief summaries of each are in the final report)**
+```{python}
+import os
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+from sklearn.ensemble import RandomForestClassifier
+
+
+train_data=pd.read_csv("data/train_data.csv")
+test_data=pd.read_csv("data/test_data.csv")
+
+features = ['gametime_remaining',"quarter", 'down', 'yards_to_go', "yardsToEndzone", "offense_strength", "defense_strength", "score_diff"]
+
+X_train = train_data[features]
+y_train = train_data['home_wins']
+
+X_test = test_data[features]
+y_test = test_data["home_wins"]
+
+best_rf = RandomForestClassifier(
+    max_features='sqrt', min_samples_leaf=10, n_estimators = 200, random_state=65, n_jobs=-1
+)
+
+best_rf.fit(X_train, y_train)
+
+game = test_data.copy()
+```
+
+
+
+```{python}
+data_1 = game[game['gid'] == 401547635].copy().sort_values("gametime_remaining", ascending=False)
+
+data_1['win_prob'] = best_rf.predict_proba(data_1[features])[:,1]
+
+fig = px.line(data_1, x='gametime_remaining', y='win_prob', custom_data=features, title= "Win Probability Over Time for 49ers vs Commanders Game")
+              
+fig.update_traces(
+    hovertemplate=(
+        "Gametime Remaining: %{customdata[0]}<br>"
+        "Quarter: %{customdata[1]}<br>"
+        "Down: %{customdata[2]}<br>"
+        "Yards to Go: %{customdata[3]:}<br>"
+        "Yards to Endzone: %{customdata[4]}<br>"
+        "Offense Strength: %{customdata[5]}<br>"
+        "Defense Strength: %{customdata[6]:}<br>"
+        "Score Difference: %{customdata[7]:}<extra></extra>"
+    )
+)
+fig.show()
+```
+
+Figure A: This plot shows an example of how the model's predicted win probability fluctuates throughout a single game. Here, it uses the NFL 2024 game of the San Francisco 49ers vs the Washington Commanders as an example. Each point represents a "game state" defined by features including score difference, field position and others (as can be seen when hovered). These are the features taken into account by the model to estimate the win probability at that time (or "gametime remaining").
+
+```{python}
+data_2 = game.copy()
+data_2['win_prob']= best_rf.predict_proba(data_2[features])[:,1]
+
+fig = go.Figure()
+
+fig.add_trace(go.Histogram(
+    x=data_2[data_2['quarter']==1]['win_prob'],
+    name='Q1',
+    nbinsx=30,
+    opacity=0.5,
+    hovertemplate=
+        "Quarter: Q1 <br>" +
+        "Win Probability Bin: %{x:} <br>" +
+        "Count: %{y}<extra></extra>"
+))
+
+fig.add_trace(go.Histogram(
+    x=data_2[data_2['quarter']==2]['win_prob'],
+    name='Q2',
+    nbinsx=30,
+    opacity=0.5,
+    hovertemplate=
+        "Quarter: Q2 <br>" +
+        "Win Probability Bin: %{x:} <br>" +
+        "Count: %{y}<extra></extra>"
+))
+
+
+fig.add_trace(go.Histogram(
+    x=data_2[data_2['quarter']==3]['win_prob'],
+    name='Q3',
+    nbinsx=30,
+    opacity=0.5,
+    hovertemplate=
+        "Quarter: Q3 <br>" +
+        "Win Probability Bin: %{x:} <br>" +
+        "Count: %{y}<extra></extra>"
+))
+
+
+fig.add_trace(go.Histogram(
+    x=data_2[data_2['quarter']==4]['win_prob'],
+    name='Q4',
+    nbinsx=30,
+    opacity=0.5,
+    hovertemplate=
+        "Quarter: Q4 <br>" +
+        "Win Probability Bin: %{x:} <br>" +
+        "Count: %{y}<extra></extra>"
+))
+
+fig.update_layout(
+    barmode='overlay',
+    title='Win Probability Distribution by Quarter',
+    xaxis_title='Win Probability',
+    yaxis_title='Count'
+)
+
+fig.show()
+```
+
+Figure B: The histogram compares the distribution of predicted win probabilities across the different quarters. It shows how the win probability starts with a concentration close to 0.6 and gradually shifts towards a more extreme value (closer to 0 or 1) as game progresses, indicating increasing certainty.
+
+
+```{python}
+data_3 = game.copy()
+data_3['win_prob'] = best_rf.predict_proba(data_3[features])[:,1]
+data_3['strength_diff'] = data_3['offense_strength'] - data_3['defense_strength']
+
+fig = px.scatter(data_3, x='gametime_remaining', y='win_prob',
+                 color='strength_diff',
+                 title="Win Probability vs Time (Adjusted for Strength Difference)",
+                 labels={'gametime_remaining': 'Gametime Remaining', 'win_prob': 'Win Probability', 'strength_diff': 'Strength difference'},
+                 custom_data=['offense_strength', 'defense_strength','gametime_remaining'])
+
+fig.update_traces(
+    marker=dict(opacity=0.3, size=3),
+    hovertemplate=(
+        "Gametime Remaining: %{customdata[2]}<br>"
+        "Offense Strength: %{customdata[0]}<br>"
+        "Defense Strength: %{customdata[1]:}<br>"
+        "Win Probability: %{y:}<extra></extra>"
+    )
+)
+fig.update_layout(hovermode="closest")
+fig.show()
+
+```
+
+Figure C: The plot shows the model's predicted win probability against gametime remaining with color representing the strength difference (difference of offense team's strength and defense team's strength) influencing the model's prediction. Observations with greater magnitude in strength difference, the closer the point is to the extreme values of 0 or 1, while points with smaller strength difference are more concentrated in aorund 0.5 which shows uncertainty.
