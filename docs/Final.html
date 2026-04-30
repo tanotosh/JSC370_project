@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Final Project – NFL Win Probability</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ce55f7038190fcfe00358e56bf6a8d4c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">NFL Win Probability</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./viz.html"> 
+<span class="menu-text">Visualizations</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./Final.html" aria-current="page"> 
+<span class="menu-text">Report</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        
+    <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="Final.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Final Project</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1">
+<h1>INTRODUCTION</h1>
+<p>The aim of this project is to build a machine learning model that predicts the probability that a home team is going to win an NFL (National Football League) game given a current game state (features). A game state is described by statistics of a team’s field position (yards to go, yards to endzone, yards gained), game’s time remaining (quarter, time_remaining), and the score difference(home score, away score). Another key feature is the offensive and defensive team strengths based on each team’s historical performance (offense strength and defense strength). All of these variables capture both the immediate context of the game and the relative strengths of the teams, and are leveraged by the model to predict the win probability (model’s output). A binary target outcome, whether the home team wins the game, contributes to the model training as well. The model is trained on past data to predict the win probability at any point of time in the game, which can be valuable for fans, analysts, coaches or strategists seeking to better understand the game dynamics, evaluate team performance, and support real-time decision making in sports analytics.</p>
+</section>
+<section id="methods" class="level1">
+<h1>METHODS</h1>
+<section id="data-collection" class="level2">
+<h2 class="anchored" data-anchor-id="data-collection">Data Collection</h2>
+<p>The dataset was extracted using the ESPN Public API (https://github.com/pseudo-r/Public-ESPN-API). To start, the API was used to collect all NFL games from the 2022 and 2023 season, providing two datasets containing 336 games and 349 games respetively with 5 variables:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>id</td>
+<td>Game ID number</td>
+<td>String</td>
+</tr>
+<tr class="even">
+<td>name</td>
+<td>Game’s name (teams playing)</td>
+<td>String</td>
+</tr>
+<tr class="odd">
+<td>home_team</td>
+<td>Home team’s ID number</td>
+<td>String</td>
+</tr>
+<tr class="even">
+<td>away_team</td>
+<td>Away team’s ID number</td>
+<td>String</td>
+</tr>
+<tr class="odd">
+<td>date</td>
+<td>Game’s date</td>
+<td>String</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 1: Games Dataset</strong></p>
+<p>Next, a different endpoint of the ESPN Public API was used to retrieve play-by-play data that occurred in each game of the 2022 and 2023 season. This produced two dataset of 57,547 observations (or single plays) and 52,703 observations respectively with 13 variables:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 64%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>gid</td>
+<td>Game ID number</td>
+<td>Integer</td>
+</tr>
+<tr class="even">
+<td>pid</td>
+<td>Play ID number</td>
+<td>Integer</td>
+</tr>
+<tr class="odd">
+<td>play_action</td>
+<td>Description of the play</td>
+<td>String</td>
+</tr>
+<tr class="even">
+<td>quarter</td>
+<td>Quarter in which the play occurred</td>
+<td>Integer</td>
+</tr>
+<tr class="odd">
+<td>time_remaining</td>
+<td>Time remaining in the current quarter (seconds)</td>
+<td>Float</td>
+</tr>
+<tr class="even">
+<td>down</td>
+<td>Down in which the play occurred</td>
+<td>Integer</td>
+</tr>
+<tr class="odd">
+<td>yards_to_go</td>
+<td>Yards needed to get a first down</td>
+<td>Integer</td>
+</tr>
+<tr class="even">
+<td>yardsToEndzone</td>
+<td>Yards needed to reach the endzone</td>
+<td>Integer</td>
+</tr>
+<tr class="odd">
+<td>yards_gained</td>
+<td>Yards gained on the play</td>
+<td>Integer</td>
+</tr>
+<tr class="even">
+<td>home_score</td>
+<td>Home team’s current score</td>
+<td>Integer</td>
+</tr>
+<tr class="odd">
+<td>away_score</td>
+<td>Away team’s current score</td>
+<td>Integer</td>
+</tr>
+<tr class="even">
+<td>offense_team</td>
+<td>Offensive team ID</td>
+<td>Float</td>
+</tr>
+<tr class="odd">
+<td>defense_team</td>
+<td>Defensive team ID</td>
+<td>Float</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 2: Plays Dataset</strong></p>
+</section>
+</section>
+<section id="df_plays_2023.to_csvnfl_plays_2023.csv-index-false" class="level1">
+<h1>df_plays_2023.to_csv(“nfl_plays_2023.csv”, index = False)</h1>
+<pre><code>
+```{python}
+#import the plays dataset from the data folder
+train_data = pd.read_csv("data/nfl_plays_2022.csv")
+test_data = pd.read_csv("data/nfl_plays_2023.csv")</code></pre>
+<section id="data-cleaning-wrangling" class="level2">
+<h2 class="anchored" data-anchor-id="data-cleaning-wrangling">Data Cleaning &amp; Wrangling</h2>
+<p>First, notice that games dataset’s column “id” corresponds to the plays dataset’s column “gid”. However, they have different variable types, so “gid” was converted to a string, matching “id”. Since only the plays dataset was downloaded and may not align with potential API updates for the games dataset, we filter out any games that are not in the plays dataset using the “gid” set.</p>
+<pre class="{python}"><code>df_games_2022["id"] = df_games_2022["id"].astype(str)
+df_games_2023["id"] = df_games_2023["id"].astype(str)
+
+train_data["gid"] = train_data["gid"].astype(str)
+test_data["gid"] = test_data["gid"].astype(str)
+
+df_games_2022 = df_games_2022[df_games_2022["id"].isin(set(train_data["gid"]))]
+df_games_2023 = df_games_2023[df_games_2023["id"].isin(set(test_data["gid"]))]</code></pre>
+<p>Next, based on the summary table of missing data, we observe that most variables in the plays dataset don’t have any missing values. The only variables with missing values are offense_team and defense_team.</p>
+<p>Further investigation of these observations shows that these values are missing when the play occurred at the start or end of a quarter or game (indicated by variable play_action). Since these plays don’t represent standard plays, they are not relevant for our model and thus are filtered out.</p>
+<p>Moreover, after examining the summary statistics table, we see that all variables are within the reasonable ranges:</p>
+<ul>
+<li><p>home_score and away_score are positive (minimums are 0)</p></li>
+<li><p>yards_gained has a range within -109 and 109 yards, which is the maximum length of a football field including the end zones</p></li>
+<li><p>time_remaining between 0 and 900 which is 4 quarters of 15 minutes</p></li>
+<li><p>yards_to_go and yardsToEndzone are positive and under 100 yards, reflecting the maximum possible distance of a football field</p></li>
+</ul>
+<p>However, the summary statistics table also show a minimum values of 0 for variables: down and quarter. After examining these observations, we see that these plays corresponds to kickoffs or start of a game. Because these events don’t represent standard play, we keep entries with quarter 1,2,3,4 and 5 (representing the 4 quarters of a standard NFL game and overtime), as well as downs 1,2,3,4 (representing offensive downs)</p>
+<p>After filtering out irrelevant data, our datasets contains 52,410 and 48,376 meaningful plays for the training (2022) and testing (2023) datasets respectively.</p>
+<pre class="{python}"><code>#Train data
+#train_data.describe() #check for extreme data
+missing = train_data.isna().sum().to_frame("n_missing")
+missing["pct_missing"] = (missing['n_missing']/len(train_data)).round(4)
+#missing.sort_values("pct_missing", ascending=False).head(20) #check for missing data</code></pre>
+<pre class="{python}"><code>#Train data
+train_data_a = train_data[train_data['down']==0]
+#display(train_data_a)
+
+#shows that when downs = 0 =&gt; kickoff/start of game
+
+train_data_b = train_data[train_data['quarter']==0]
+#display(train_data_b)
+
+#shows that when quarter = 0 =&gt; start of game
+
+train_data_c = train_data[train_data['offense_team'].isna()]
+#display(train_data_c)
+
+#shows that when offense_team = 0 =&gt; start/end of quarter or game
+
+train_data_d = train_data[train_data['defense_team'].isna()]
+#display(train_data_d)
+
+#shows that when defense_team = 0 =&gt; start/end of quarter or game</code></pre>
+<pre class="{python}"><code>#Train data
+# check if quarter is either 1, 2, 3, 4
+train_data = train_data[train_data['quarter'].isin([1,2,3,4,5])]
+# check if down is 1,2,3,4
+train_data = train_data[train_data['down'].isin([1,2,3,4])]
+# offense and defense team is not null
+train_data = train_data.dropna(subset=["offense_team", "defense_team"])
+
+#train_data.info()</code></pre>
+<pre class="{python}"><code>#Test data
+#test_data.describe() #check for extreme data
+missing = test_data.isna().sum().to_frame("n_missing")
+missing["pct_missing"] = (missing['n_missing']/len(test_data)).round(4)
+#missing.sort_values("pct_missing", ascending=False).head(20) #check for missing data</code></pre>
+<pre class="{python}"><code>#Test data
+test_data_a = test_data[test_data['down']==0]
+#display(test_data_a)
+
+#shows that when downs = 0 =&gt; kickoff/start of game
+
+test_data_b = test_data[test_data['quarter']==0]
+#display(test_data_b)
+
+#shows that when quarter = 0 =&gt; start of game
+
+test_data_c = test_data[test_data['offense_team'].isna()]
+#display(test_data_c)
+
+#shows that when offense_team = 0 =&gt; start/end of quarter or game
+
+test_data_d = test_data[test_data['defense_team'].isna()]
+#display(test_data_d)
+
+#shows that when defense_team = 0 =&gt; start/end of quarter or game</code></pre>
+<pre class="{python}"><code>#Test data
+# check if quarter is either 1, 2, 3, 4
+test_data = test_data[test_data['quarter'].isin([1,2,3,4,5])]
+# check if down is 1,2,3,4
+test_data = test_data[test_data['down'].isin([1,2,3,4])]
+# offense and defense team is not null
+test_data = test_data.dropna(subset=["offense_team", "defense_team"])
+
+#test_data.info()</code></pre>
+</section>
+<section id="feature-engineering" class="level2">
+<h2 class="anchored" data-anchor-id="feature-engineering">Feature Engineering</h2>
+<p>The target outcome for this model is a binary indicator of whether the home team wins the game. Since the dataset is rows of all plays played in the all games, we first grouped the plays per game, and find the maximum score for both the home and away team for each game. If the home team has the higher maximum score, then the tagret outcome variable, “home_wins” is set to 1 indicating tha tthe home team won. This target outcome will then be merged into the orignal plays dataset so that each row (or play) is assinged the final game outcome.</p>
+<p>In order to better represent the state of the game, 4 additional variables were engineered from existing data:</p>
+<ul>
+<li><p>gametime_remaining: Time remaining in the whole game (instead of time remaining in the quarter as represented as the variable time_remaning) (in seconds)</p>
+<ul>
+<li><strong>gametime_remaining</strong> = ((4 - quarters) x 900) + time_remaining</li>
+<li>where each quarter consists of 900 seconds ( = 15 minutes) and for quarter = 5 (indicating overtime plays), this value is set to NULL</li>
+</ul></li>
+<li><p>score_diff: Score Difference between home and away team (relative to the home team)</p>
+<ul>
+<li><strong>score_diff</strong> = home_score - away_score</li>
+<li>the difference between the home team’s score and away team’s score at that time of play</li>
+</ul></li>
+<li><p>offense_strength: the strength of the team currently on offense</p>
+<ul>
+<li>This value was calculated by the sum of wins / sum of games played per team</li>
+</ul></li>
+<li><p>defense_strength: the strength of the team currently on defense</p>
+<ul>
+<li>This value was calculated by the sum of wins / sum of games played per team</li>
+</ul></li>
+</ul>
+<p>Together, these engineered varaibles provide more context of the game, improving the model’s training to estimate the win probability.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 58%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>gid</td>
+<td>Game ID</td>
+<td>String</td>
+</tr>
+<tr class="even">
+<td>pid</td>
+<td>Play ID</td>
+<td>Integer</td>
+</tr>
+<tr class="odd">
+<td>play_action</td>
+<td>Description of play</td>
+<td>String</td>
+</tr>
+<tr class="even">
+<td>quarter</td>
+<td>Quarter of play</td>
+<td>Integer</td>
+</tr>
+<tr class="odd">
+<td>time_remaining</td>
+<td>Time remaining in quarter (seconds)</td>
+<td>Float</td>
+</tr>
+<tr class="even">
+<td>down</td>
+<td>Current down</td>
+<td>Integer</td>
+</tr>
+<tr class="odd">
+<td>yards_to_go</td>
+<td>Yards to first down</td>
+<td>Integer</td>
+</tr>
+<tr class="even">
+<td>yardsToEndzone</td>
+<td>Distance to endzone</td>
+<td>Integer</td>
+</tr>
+<tr class="odd">
+<td>yards_gained</td>
+<td>Yards gained on play</td>
+<td>Integer</td>
+</tr>
+<tr class="even">
+<td>home_score</td>
+<td>Home team score</td>
+<td>Integer</td>
+</tr>
+<tr class="odd">
+<td>away_score</td>
+<td>Away team score</td>
+<td>Integer</td>
+</tr>
+<tr class="even">
+<td>offense_team</td>
+<td>Offensive team ID</td>
+<td>String</td>
+</tr>
+<tr class="odd">
+<td>defense_team</td>
+<td>Defensive team ID</td>
+<td>String</td>
+</tr>
+<tr class="even">
+<td>gametime_remaining</td>
+<td>Time remaining in game (seconds)</td>
+<td>Float</td>
+</tr>
+<tr class="odd">
+<td>score_diff</td>
+<td>Home score − away score</td>
+<td>Integer</td>
+</tr>
+<tr class="even">
+<td>home_wins</td>
+<td>Target variable (1 = home win, 0 = loss)</td>
+<td>Integer</td>
+</tr>
+<tr class="odd">
+<td>offense_strength</td>
+<td>Offensive team win rate</td>
+<td>Float</td>
+</tr>
+<tr class="even">
+<td>defense_strength</td>
+<td>Defensive team win rate</td>
+<td>Float</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 3: Final Dataset</strong></p>
+<pre class="{python}"><code>#Train data
+#Feature Engineering
+#Adding variable of time remaning in game instead of in quarter
+train_data["gametime_remaining"] = np.where(train_data['quarter']&lt;=4, (4-train_data['quarter'])*900 + train_data['time_remaining'], np.nan)
+
+#Adding Score Difference relative to home team
+train_data["score_diff"] = (train_data["home_score"] - train_data['away_score'])
+
+#train_data.info()
+#train_data.describe()</code></pre>
+<pre class="{python}"><code>#Train data
+train_data["offense_team"] = train_data["offense_team"].astype(int).astype(str)
+train_data["defense_team"] = train_data["defense_team"].astype(int).astype(str)
+
+#group train data by game id and take the maximum home team's score and away's team score
+win_or_lose_2022 = train_data.groupby("gid").agg({"home_score":"max", "away_score":"max"}).reset_index()
+# 1 indicates home team scores higher and 0 otherwise
+win_or_lose_2022["home_wins"] = (win_or_lose_2022["home_score"] &gt; win_or_lose_2022["away_score"]).astype(int) 
+
+win_or_lose_2022 = win_or_lose_2022.merge(df_games_2022[["id", "home_team", "away_team"]], left_on ="gid", right_on="id")
+
+train_data = train_data.merge(win_or_lose_2022[["gid", "home_wins"]], on="gid")
+
+games_outcome_2022 =[]
+for _, row in win_or_lose_2022.iterrows():
+    if row["home_wins"] == 1:
+        games_outcome_2022.append((row["home_team"], 1))
+        games_outcome_2022.append((row["away_team"], 0))
+    else:
+        games_outcome_2022.append((row["home_team"], 0))
+        games_outcome_2022.append((row["away_team"], 1))
+
+games_outcome_2022_df = pd.DataFrame(games_outcome_2022, columns=['team', 'win'])
+
+team_strength = games_outcome_2022_df.groupby("team")["win"].mean().reset_index()
+
+train_data = train_data.merge(team_strength, left_on="offense_team", right_on="team", how = "left").rename(columns={"win": "offense_strength"}).drop(columns=["team"])
+
+train_data = train_data.merge(team_strength, left_on="defense_team", right_on="team", how = "left").rename(columns={"win": "defense_strength"}).drop(columns=["team"])</code></pre>
+<pre class="{python}"><code>#Test data
+#Feature Engineering
+#Adding variable of time remaning in game instead of in quarter
+test_data["gametime_remaining"] = np.where(test_data['quarter']&lt;=4, (4-test_data['quarter'])*900 + test_data['time_remaining'], np.nan)
+
+#Adding Score Difference relative to home team
+test_data["score_diff"] = (test_data["home_score"] - test_data['away_score'])
+
+#test_data.info()
+#test_data.describe()</code></pre>
+<pre class="{python}"><code>#Test data
+test_data["offense_team"] = test_data["offense_team"].astype(int).astype(str)
+test_data["defense_team"] = test_data["defense_team"].astype(int).astype(str)
+
+#group train data by game id and take the maximum home team's score and away's team score
+win_or_lose_2023 = test_data.groupby("gid").agg({"home_score":"max", "away_score":"max"}).reset_index()
+# 1 indicates home team scores higher and 0 otherwise
+win_or_lose_2023["home_wins"] = (win_or_lose_2023["home_score"] &gt; win_or_lose_2023["away_score"]).astype(int) 
+
+win_or_lose_2023 = win_or_lose_2023.merge(df_games_2023[["id", "home_team", "away_team"]], left_on ="gid", right_on="id")
+
+test_data = test_data.merge(win_or_lose_2023[["gid", "home_wins"]], on="gid")
+
+test_data = test_data.merge(team_strength, left_on="offense_team", right_on="team", how = "left").rename(columns={"win": "offense_strength"}).drop(columns=["team"])
+
+test_data = test_data.merge(team_strength, left_on="defense_team", right_on="team", how = "left").rename(columns={"win": "defense_strength"}).drop(columns=["team"])</code></pre>
+<pre class="{python}"><code># train_data.to_csv("train_data.csv", index = False)
+# test_data.to_csv("test_data.csv", index = False)</code></pre>
+</section>
+<section id="eda" class="level2">
+<h2 class="anchored" data-anchor-id="eda">EDA</h2>
+<section id="statistics-summary-of-key-variables" class="level3">
+<h3 class="anchored" data-anchor-id="statistics-summary-of-key-variables">Statistics Summary of Key Variables</h3>
+<p>The summary table below shows key game statistics of 52,410 plays from the 2022 NFL season (train dataset) with each observation representing a single play including variables describing the game situation. The table confirms that all variables fall within expected ranges of a realistic game state.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>quarter</th>
+<th>time_remaining</th>
+<th>down</th>
+<th>yards_to_go</th>
+<th>yardsToEndzone</th>
+<th>yards_gained</th>
+<th>home_score</th>
+<th>away_score</th>
+<th>gametime_remaining</th>
+<th>score_diff</th>
+<th>home_wins</th>
+<th>offense_strength</th>
+<th>defense_strength</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>mean</td>
+<td>2.59</td>
+<td>407.24</td>
+<td>2.02</td>
+<td>8.41</td>
+<td>51.36</td>
+<td>5.77</td>
+<td>11.72</td>
+<td>10.17</td>
+<td>1696.95</td>
+<td>1.55</td>
+<td>0.559</td>
+<td>0.501</td>
+<td>0.499</td>
+</tr>
+<tr class="even">
+<td>std</td>
+<td>1.13</td>
+<td>275.30</td>
+<td>1.01</td>
+<td>4.12</td>
+<td>24.42</td>
+<td>10.43</td>
+<td>9.67</td>
+<td>9.16</td>
+<td>1050.37</td>
+<td>9.633</td>
+<td>0.497</td>
+<td>0.1449</td>
+<td>0.1451</td>
+</tr>
+<tr class="odd">
+<td>min</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>-45</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>-37</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>max</td>
+<td>5</td>
+<td>900</td>
+<td>4</td>
+<td>89</td>
+<td>99</td>
+<td>99</td>
+<td>54</td>
+<td>51</td>
+<td>3600</td>
+<td>47</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 4: Summary Table of Key Variables</strong></p>
+<pre class="{python}"><code>#| echo: false
+# Counts of Plays per quarter
+(ggplot(train_data, aes(x='factor(quarter)', fill='factor(down)')) +
+geom_bar()+
+labs(
+    x='Quarter',
+    y = "Number of Plays",
+    fill = "Down",
+    title = "Proportion of Downs per Quarter"
+) + 
+theme_minimal()
+)</code></pre>
+<p><strong>Figure 1: Proportion of Downs per Quarter</strong></p>
+<p>This stacked bar graph displays the number of plays as well as the proportion of downs across each quarter. We can see that there are more plays occurring in second and fourth quarter which might be because teams tend to hustle as they approach a turnover or end of the game. Besides that, first and second down occurs more frequent compared to third and fourth down which is expected as they represent the start of offensive drives. Notice how there is more fourth down played in the fourth quarter compared to other quarters suggesting increased risk-taking drives attempted by teams to get more points in the limited time left. Another thing to highlight, is the low count in plays for 5th quarter as overtime don’t happen often in NFL games. Hence, these findings suggests that both downs and quarters might influence win probability and thus are added as features of the model.</p>
+<pre class="{python}"><code>#| echo: false
+# Distribution of Time Remaining in each quarter
+(ggplot(train_data, aes(x='factor(quarter)', y='time_remaining')) +
+geom_boxplot()+
+labs(
+    x = "Time Remaining in Quarter (in seconds)",
+    y = "Quarters",
+    title = "Distribution of Time Remaining per Quarter"
+) + 
+theme_minimal()
+)</code></pre>
+<p><strong>Figure 2: Distribution of Time Remaining per Quarter</strong></p>
+<p>The distribution of time remaining within each quarter is balanced with plays occurring throughout the duration of the game. This suggests that plays are not are not concentrated in a certain time of the quarter and that our data is not skewed (it captures game states at all point in time of the game) . This is key for the model as it ensures that predictions can be made across all quarters of the game.</p>
+<pre class="{python}"><code>#| echo: false
+#Distribution of Yards To Endzone
+plt.hist(train_data["yardsToEndzone"], bins=100)
+plt.xlabel("Yards to Enzone")
+plt.ylabel("Count")
+plt.title("Distribution of Yards To Endzone")
+plt.show()</code></pre>
+<p><strong>Figure 3: Distribution of Yards to Endzone</strong></p>
+<p>Field position values are distributed across the field with more plays occurring at approximately 75 yards away from the end zone where most drives often begin. The wide spread indicates that the dataset captures a diverse range of game situation at every yard of the field, ensuring that predictions can be made by the model across the field.</p>
+<pre class="{python}"><code>#| echo: false
+# Association between GameTime Remaining and Score Difference
+(ggplot(train_data, aes(x='gametime_remaining', y='score_diff')) +
+geom_point(alpha=0.5)+
+labs(
+    x='Gametime Remaining (in Seconds)',
+    y = "Score Difference (relative to Home team)",
+    title = "Association between GameTime Remaining and Score Difference"
+) + 
+theme_minimal()
+)</code></pre>
+<p><strong>Figure 4: Association between Gametime Remaining and Score Difference</strong> The association between the score difference and game time remaining seems to have a correlation where as game time decreases (game progresses), the score differences tend to increase in magnitude, reflecting the fact that games often become more decisive towards the end.</p>
+</section>
+</section>
+<section id="model-building" class="level2">
+<h2 class="anchored" data-anchor-id="model-building">Model Building</h2>
+<p>To search for the best model to predict the probablity that the home team wins, both Random Forest classifier and the XGBoost Classifier were candidates, because: - Random Forest Classifer: this model creates decision trees by randomly creating subsets of the 8 key variables and takes the majority vote across the trees.</p>
+<pre><code>- XGBoost Classifier: this model creates a weak learner and slightly improves sequentially upon predictions of the previous models by focusing on the observations with the largest errors</code></pre>
+<p>Both approaches improves prediction accuracy for a binary target outcome, whether the team wins (indicated by home_wins = 1) or loses (indicated by home_wins = 0) and outputs the probability of a home team win.</p>
+<section id="training-and-testing" class="level3">
+<h3 class="anchored" data-anchor-id="training-and-testing">Training and Testing</h3>
+<p>We have two datasets: - 2022 NFL games dataset which is our training dataset - 2023 NFL games dataset which is our testing dataset</p>
+<p>The model is trained on the training set (2022 NFL games) and will be evaluated on the testing set (2023 NFL games) to evaluate its accuracy.</p>
+</section>
+<section id="hyperparameter-tuning" class="level3">
+<h3 class="anchored" data-anchor-id="hyperparameter-tuning">Hyperparameter Tuning</h3>
+<p>To improve model performance, hyperparameters were tuned on the training set using 5-fold CV with random search. The following hyperparameters samples were considered: - Random Forest: - max_features: features per split (‘sqrt’, 1/3, 0.5) - min_samples_leaf: minimum samples or observation in each leaf (1, 5, 10)<br>
+- n_estimators: number of trees (set to 200)</p>
+<ul>
+<li>XGBoost:
+<ul>
+<li>max_depth: depth of each tree (4,6,8)</li>
+<li>learning_rate: shrinkage per step (0.05, 0.1, 0.5)<br>
+</li>
+<li>reg_lambda: L2 regularization (0.1, 1, 10)</li>
+<li>reg_alpha: L1 regularization (0, 0.1, 1)</li>
+<li>n_estimators: number of trees (set to 200)</li>
+</ul></li>
+</ul>
+<p>Here are the best hyperaparmeter combinations found for each model: - Random Forest: - max_features: ‘sqrt’ - min_samples_leaf: 10 - n_estimators: 200</p>
+<ul>
+<li>XGBoost:
+<ul>
+<li>max_depth: 6</li>
+<li>learning_rate: 0.05<br>
+</li>
+<li>reg_lambda: 1</li>
+<li>reg_alpha: 0.1</li>
+<li>n_estimators: 200</li>
+</ul></li>
+</ul>
+<pre class="{python}"><code>features = ['gametime_remaining',"quarter", 'down', 'yards_to_go', "yardsToEndzone", "offense_strength", "defense_strength", "score_diff"]
+
+X_train = train_data[features]
+y_train = train_data['home_wins']
+
+X_test = test_data[features]
+y_test = test_data["home_wins"]</code></pre>
+<pre class="{python}"><code>from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import RandomizedSearchCV
+
+param_grid = {
+    "max_features": ['sqrt', 1/3, 0.5],
+    "min_samples_leaf" : [1, 5, 10]
+}
+
+rf = RandomForestClassifier(
+    n_estimators=200, random_state=65, n_jobs =-1
+)
+cv_rf = RandomizedSearchCV(
+    rf, param_grid, cv=5, n_iter=10, n_jobs=-1,
+    scoring="roc_auc"
+)
+
+cv_rf.fit(X_train, y_train)
+print(f"Best params: "
+      f"{cv_rf.best_params_}")
+</code></pre>
+<pre class="{python}"><code>from xgboost import XGBClassifier
+
+param_dist = {
+    'max_depth':     [4,6,8],
+    'learning_rate': [0.05, 0.1, 0.5],
+    'reg_lambda':    [0.1, 1, 10],
+    'reg_alpha':     [0, 0.1, 1],
+}
+
+xgb = XGBClassifier(
+    n_estimators=200, 
+    random_state=65,
+    n_jobs=-1
+ )
+
+xgb_search = RandomizedSearchCV(
+    estimator=xgb,
+    param_distributions=param_dist,
+    n_iter=10 ,  
+    cv=5,  
+    scoring= 'roc_auc', 
+    random_state=65,
+    n_jobs=-1,
+    verbose=1
+ )
+
+xgb_search.fit(X_train, y_train) 
+
+best_params_xgb = xgb_search.best_params_ 
+print('Best params:', best_params_xgb)</code></pre>
+</section>
+<section id="model-evaluation" class="level3">
+<h3 class="anchored" data-anchor-id="model-evaluation">Model Evaluation</h3>
+<p>After the models were rebuild with the best combinations of hyperparameter above and fit on the training data, the models were ran on the test data and their performance are evaluated using: - Accuracy: represents the model’s ability to predict wins correctly - F1-Score: represents the model’s ability to balance precision and recall - ROC-AUC: represents the model’s performance in distinguishing a win or loss across all thresholds</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 22%">
+<col style="width: 20%">
+<col style="width: 34%">
+<col style="width: 14%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Test Accuracy</th>
+<th>Misclassification Error</th>
+<th>F1 Score</th>
+<th>AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Random Forest</td>
+<td>0.698</td>
+<td>0.302</td>
+<td>0.742</td>
+<td>0.771</td>
+</tr>
+<tr class="even">
+<td>XGBoost</td>
+<td>0.693</td>
+<td>0.307</td>
+<td>0.739</td>
+<td>0.758</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table 5: Model Performance Comparison</strong></p>
+</section>
+</section>
+</section>
+<section id="results" class="level1">
+<h1>RESULTS</h1>
+<pre class="{python}"><code>from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, confusion_matrix, ConfusionMatrixDisplay
+best_params_rf = cv_rf.best_params_
+
+best_rf = RandomForestClassifier(
+    **best_params_rf, n_estimators = 200, random_state=65, n_jobs=-1
+)
+
+best_rf.fit(X_train, y_train)
+
+y_pred_rf = best_rf.predict(X_test)
+y_prob_rf = best_rf.predict_proba(X_test)[:,1]
+
+rf_test_acc = accuracy_score(y_test, y_pred_rf)
+rf_test_f1 = f1_score(y_test, y_pred_rf)
+rf_test_auc = roc_auc_score(y_test, y_prob_rf)
+
+print(f"Random Forest test accuracy: {rf_test_acc}")
+print(f"Random Forest test F1-score: {rf_test_f1}")
+print(f"Random Forest test AUC: {rf_test_auc}")
+
+
+best_xgb = XGBClassifier(
+    **best_params_xgb, n_estimators = 200, random_state=65, n_jobs=-1
+)
+
+best_xgb.fit(X_train, y_train)
+
+y_pred_xgb = best_xgb.predict(X_test)
+y_prob_xgb = best_xgb.predict_proba(X_test)[:,1]
+
+xgb_test_acc = accuracy_score(y_test, y_pred_xgb)
+xgb_test_f1 = f1_score(y_test, y_pred_xgb)
+xgb_test_auc = roc_auc_score(y_test, y_prob_xgb)
+
+print(f"XGBoost test accuracy: {xgb_test_acc}")
+print(f"XGBoost test F1-score: {xgb_test_f1}")
+print(f"XGBoost test AUC: {xgb_test_auc}")</code></pre>
+<pre class="{python}"><code>cm = confusion_matrix(y_test, y_pred_rf)
+cm_xgb = confusion_matrix(y_test, y_pred_xgb)
+fig, ax = plt.subplots(1, 2, figsize=(10, 8))
+
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Loss", "Win"])
+disp.plot(ax=ax[0], cmap='Blues', xticks_rotation=45)
+ax[0].set_title("Random Forest Classification")
+
+disp_xgb = ConfusionMatrixDisplay(confusion_matrix=cm_xgb, display_labels=["Loss", "Win"])
+disp_xgb.plot(ax=ax[1], cmap='Blues', xticks_rotation=45)
+ax[1].set_title("XGBoost Classification")
+
+plt.tight_layout()
+plt.show()</code></pre>
+<p><strong>Figure 5: Confusion Matrices of Models</strong> The Confusion Matrices shows diagonals shows the accuracy of both models. With greater proportion of the prediction (indicated by both the larger numbers and the darker shade of blue) lies at the true values (Predicted Win &amp; True Win, Predicted Loss &amp; True Loss). Notice that False Positives and False Negatives counts are significantly smaller than the True values, suggestsing the high accuracy in the both models.</p>
+<pre class="{python}"><code>fig, ax = plt.subplots(1, 2, figsize=(10, 8))
+rf_importances = best_rf.feature_importances_
+
+imp_df_rf = pd.DataFrame({
+    'feature': features,
+    'importance': rf_importances
+}).sort_values('importance')
+
+xgb_importances = best_xgb.feature_importances_
+
+imp_df_xgb = pd.DataFrame({
+    'feature': features,
+    'importance': xgb_importances
+}).sort_values('importance')
+
+ax[0].barh(imp_df_rf['feature'], imp_df_rf["importance"])
+ax[0].set_title("Random Forest")
+
+ax[1].barh(imp_df_xgb['feature'], imp_df_xgb["importance"])
+ax[1].set_title("XGBoost")
+
+plt.tight_layout()
+plt.show()</code></pre>
+<p><strong>Figure 6: Feature Importance Graphs of Models</strong> The Feature Importance Graphs highlights the top most influential features for each model. We see both models have score difference as the more dominant variable, followed by team strengths then remaining game time. This shows that not only does game statistics influence the model, but also each team’s relative strengths contributes meaningfully.</p>
+<pre class="{python}"><code>comparison_c = pd.DataFrame({
+    'Model': ['Random Forest', "XGBoost"],
+    'Test Accuracy': [rf_test_acc, xgb_test_acc],
+    'Test Misclassification Error': [1-rf_test_acc, 1-xgb_test_acc],
+    'Test F1-Score': [rf_test_f1, xgb_test_f1],
+    'Test AUC': [rf_test_auc, xgb_test_auc]
+})
+
+print(comparison_c.to_string(index=False))</code></pre>
+<p>The final selected model is the Random Forest Classifier as it has a higher accuracy (0.698 vs 0.693) along with a higher F1-score (0.742 vs 0.739), indicating better balance between percision and recall, as well as higher AUC score (0.77 vs 0.76), making it more reliable in predicting both win and loss resutls.</p>
+<p>With Random Forest Classifier as our model, we set a specific game, the “NFL 2024 game of the San Francisco 49ers vs the Washington Commanders” to provide an example of how our model could provide valuable insights.</p>
+<p>Figure A, the plot shows how win probability of the home team (in this case, the Commanders) evovles throughout the game. At the start of the game (right hand side of the graph), the win probability is around 0.6 which is reasonable as we know that team strength affects the prediction quite significantly. As the game progresses, game state (e.g.&nbsp;score difference, field positions) changes and those changes influences the model’s prediction which is reflected in the fluctuation of the graph. Towards the end of the game (closer to gametime_remaning = 0) the win probability shifts to a more extreme value (0 or 1, in this case 0). This reflects a game state with a significant score difference of -17, limited time remaining and field position far away from the end zone (difficult to score a touchdown or a field goal), indicating there isn’t much chances for the Commanders to possibly win at that game state.</p>
+<p>Figure B highlights the difference in distrbution of predicted win probabilities among the different quarters. In the early quarters, win probabilities centers around 0.6, reflecting high uncertainty due to ample remaining time. As the game progresses, the distribution spreads out in third quarter (a more uniform distribution). Another apprarent insight is how the win probabtility in the fourth quarter concentrates in the two extreme values of 0 and 1, indicating increased certainty in game outcome as it gets closer to the end of the game and score differences becomes more influential.</p>
+<p>Figure C illustrates the relationship between win probabiltiy and gametime remaining, highlighting the role of team’s strength difference. At the early stages of the game, there are more extreme colour (purple or yellow) points towards the extreme values of 0 or 1, suggesting how the magnitude in strength difference influences the prediction of win probability. As the game progresses, the different colour points evens out, indiccating that team strength difference doesn’t influence the win proabbitliy as much as early in the game.</p>
+</section>
+<section id="conclusion-summary" class="level1">
+<h1>CONCLUSION &amp; SUMMARY</h1>
+<p>This project has developed a Random Forest Classifier Model tha predicts whether a home team will win an NFL game given the game state, and outputs the win probability at that point of the game. The most influiential features leveraged by the model are score difference, team strengths and game time remaining, as well as other less dominant features like field position also contribute in predicting the win probability.</p>
+<p>The results shows that the model is able to produce meaningful and interpretable insights. For example, given a game state with significant negative score difference, limited time remaining and poor field position, the chances of winning are low and thus teams can take more risky plays to attempt to even out the score.</p>
+<p>During model building, we also learn that a Random Forest Classifier performs slightly better than the XGBoost (by comparing the accuracy, F1-score and ROC-AUC). Hence, Random Forest Classifier was chosen as our final model with an accuracy of apprximately 70%.</p>
+<p>However, there are several limitations to this method. First, the model doesn’t consider player statistics or whether they are playing or not, which can affect the offense or defense strength values, thus impacting game outcome. Besides that, the model doesn’t consider team performance against specific opponents, and there is no distinction between the offense and defense strengths beyond the overall strength value.</p>
+<p>Further improvements would include adding more features such as players conditions, importing more hisotrical data to capture team performance against specific teams and differentiating offense and defense strengths.</p>
+<p>To summarize, this project shows that machine learning models can effectively estimate win probability in NFL games using conditions of the game. These findings can be valuable for understanding game dynamics and supporting decision-making in sports analytics, while also providing a foundation for future improvements.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Copyright © 2026 Shannon Tanoto</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

@@ -1,13 +1,17 @@
 project:
   type: website
-  output-dir: "."
+  output-dir: "docs"
 
 website:
-  title: "My Website"
+  title: "NFL Win Probability"
   navbar:
     left:
-      - icon: fa-home
+      - text: Home
         href: index.qmd
+      - text: Visualizations
+        href: viz.qmd
+      - text: Report
+        href: Final.qmd
   page-footer:
     center: "Copyright &copy; 2026 Shannon Tanoto"
 
@@ -15,5 +19,4 @@ format:
   html:
     theme: cosmo
     highlight-style: textmate
-    include-after-body: footer.html
     css: styles.css

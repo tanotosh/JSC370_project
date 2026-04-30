@@ -58,113 +58,113 @@ Next, a second ESPN Public API was used to retrieve play-by-play data that occur
 ```{python}
 #| echo: false
 #| #import libaries
-import requests
-import pandas as pd
-import json
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import time
-from plotnine import *
+# import requests
+# import pandas as pd
+# import json
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+# import time
+# from plotnine import *
 ```
 
 ```{python}
 #| echo: false
 # ESPN API configuration
-BASE_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/"
+# BASE_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/"
 
-# Extract NFL 2022 season games
-games = []
-url = f"{BASE_URL}scoreboard"
+# # Extract NFL 2022 season games
+# games = []
+# url = f"{BASE_URL}scoreboard"
 
-params = {
-    "limit": 1000,
-    "dates": 2022
-}
+# params = {
+#     "limit": 1000,
+#     "dates": 2022
+# }
 
-response = requests.get(url, params = params)
+# response = requests.get(url, params = params)
 
-data = response.json()
+# data = response.json()
 
-for event in data["events"]:
-    games.append({
-        "id": event['id'],
-        "name": event["name"],
-        "date": event["date"]
-    })
+# for event in data["events"]:
+#     games.append({
+#         "id": event['id'],
+#         "name": event["name"],
+#         "date": event["date"]
+#     })
 
-df_games = pd.DataFrame(games)
+# df_games = pd.DataFrame(games)
 ```
 
 ```{python}
 #| echo: false
-df_games.head(50)
-df_games.info()
+# df_games.head(50)
+# df_games.info()
 ```
 
 ```{python}
 #| echo: false
 #Extract Play-by-play
-plays = []
-for gid in df_games['id']:
-    url = f"https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/{gid}/competitions/{gid}/plays"
+# plays = []
+# for gid in df_games['id']:
+#     url = f"https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/{gid}/competitions/{gid}/plays"
 
-    params = {
-        "limit": 300
-    }
+#     params = {
+#         "limit": 300
+#     }
 
-    response = requests.get(url, params = params)
+#     response = requests.get(url, params = params)
 
-    data = response.json()
+#     data = response.json()
 
-    for play in data.get("items",[]):
-        offense_team = None
-        defense_team = None
-        for team in play.get('teamParticipants',[]):
-            if team.get('type') == 'offense':
-                offense_team = team.get('id')
+#     for play in data.get("items",[]):
+#         offense_team = None
+#         defense_team = None
+#         for team in play.get('teamParticipants',[]):
+#             if team.get('type') == 'offense':
+#                 offense_team = team.get('id')
 
-            elif team.get('type') == 'defense':
-                defense_team = team.get('id')
+#             elif team.get('type') == 'defense':
+#                 defense_team = team.get('id')
 
 
-        plays.append({
-            "gid": gid,
-            "pid": play.get('id'),
-            "play_action": play.get("text", ""),
-            "quarter": play.get('period',{}).get('number'),           
-            "time_remaining": play.get('clock',{}).get('value'),
-            "down": play.get('start', {}).get('down'),
-            "yards_to_go": play.get('start',{}).get('distance'),
-            "yardsToEndzone": play.get('start', {}).get('yardsToEndzone'),
-            "yards_gained": play.get("statYardage"),
-            "home_score" : play.get("homeScore"),
-            "away_score": play.get('awayScore'),
-            "offense_team": offense_team,
-            "defense_team": defense_team
+#         plays.append({
+#             "gid": gid,
+#             "pid": play.get('id'),
+#             "play_action": play.get("text", ""),
+#             "quarter": play.get('period',{}).get('number'),           
+#             "time_remaining": play.get('clock',{}).get('value'),
+#             "down": play.get('start', {}).get('down'),
+#             "yards_to_go": play.get('start',{}).get('distance'),
+#             "yardsToEndzone": play.get('start', {}).get('yardsToEndzone'),
+#             "yards_gained": play.get("statYardage"),
+#             "home_score" : play.get("homeScore"),
+#             "away_score": play.get('awayScore'),
+#             "offense_team": offense_team,
+#             "defense_team": defense_team
 
-        })
+#         })
 
-        time.sleep(0.1)
+#         time.sleep(0.1)
 
-    print(f"{gid}")
+#     print(f"{gid}")
 
-df_plays = pd.DataFrame(plays)
+# df_plays = pd.DataFrame(plays)
 ```
 
 ```{python}
 #| echo: false
-df_plays.to_csv("nfl_plays_2022.csv", index = False)
+# df_plays.to_csv("nfl_plays_2022.csv", index = False)
 ```
 
 ## Data Cleaning & Wrangling
 
 ```{python}
 #| echo: false
-df_plays.describe() #check for extreme data
-missing = df_plays.isna().sum().to_frame("n_missing")
-missing["pct_missing"] = (missing['n_missing']/len(df_plays)).round(4)
-missing.sort_values("pct_missing", ascending=False).head(20) #check for missing data
+# df_plays.describe() #check for extreme data
+# missing = df_plays.isna().sum().to_frame("n_missing")
+# missing["pct_missing"] = (missing['n_missing']/len(df_plays)).round(4)
+# missing.sort_values("pct_missing", ascending=False).head(20) #check for missing data
 ```
 
 Based on the summary table of missing data, we observe that most variables in the plays dataset don't have any missing values. The only variables with missing vales are offense_team and defense_team.
@@ -185,37 +185,37 @@ However, the summary statistics table also show a minimum values of 0 for variab
 
 ```{python}
 #| echo: false
-df_plays_a = df_plays[df_plays['down']==0]
-#display(df_plays_a)
+# df_plays_a = df_plays[df_plays['down']==0]
+# #display(df_plays_a)
 
-#shows that when downs = 0 => kickoff/start of game
+# #shows that when downs = 0 => kickoff/start of game
 
-df_plays_b = df_plays[df_plays['quarter']==0]
-#display(df_plays_b)
+# df_plays_b = df_plays[df_plays['quarter']==0]
+# #display(df_plays_b)
 
-#shows that when quarter = 0 => start of game
+# #shows that when quarter = 0 => start of game
 
-df_plays_c = df_plays[df_plays['offense_team'].isna()]
-#display(df_plays_c)
+# df_plays_c = df_plays[df_plays['offense_team'].isna()]
+# #display(df_plays_c)
 
-#shows that when offense_team = 0 => start/end of quarter or game
+# #shows that when offense_team = 0 => start/end of quarter or game
 
-df_plays_d = df_plays[df_plays['defense_team'].isna()]
-#display(df_plays_d)
+# df_plays_d = df_plays[df_plays['defense_team'].isna()]
+# #display(df_plays_d)
 
-#shows that when defense_team = 0 => start/end of quarter or game
+# #shows that when defense_team = 0 => start/end of quarter or game
 ```
 
 ```{python}
 #| echo: false
 # check if quarter is either 1, 2, 3, 4
-df_plays = df_plays[df_plays['quarter'].isin([1,2,3,4,5])]
-# check if down is 1,2,3,4
-df_plays = df_plays[df_plays['down'].isin([1,2,3,4])]
-# offense and defense team is not null
-df_plays = df_plays.dropna(subset=["offense_team", "defense_team"])
+# df_plays = df_plays[df_plays['quarter'].isin([1,2,3,4,5])]
+# # check if down is 1,2,3,4
+# df_plays = df_plays[df_plays['down'].isin([1,2,3,4])]
+# # offense and defense team is not null
+# df_plays = df_plays.dropna(subset=["offense_team", "defense_team"])
 
-df_plays.info()
+# df_plays.info()
 ```
 
 After filtering out irrelevant data, our dataset contains 52,410 meaningful plays across all games.
@@ -237,13 +237,13 @@ In order to better represent the state of the game, two additional variables wer
 #| echo: false
 #Feature Engineering
 #Adding variable of time remaning in game instead of in quarter
-df_plays["gametime_remaining"] = np.where(df_plays['quarter']<=4, (4-df_plays['quarter'])*900 + df_plays['time_remaining'], np.nan)
+# df_plays["gametime_remaining"] = np.where(df_plays['quarter']<=4, (4-df_plays['quarter'])*900 + df_plays['time_remaining'], np.nan)
 
-#Adding Score Difference relative to home team
-df_plays["score_diff"] = (df_plays["home_score"] - df_plays['away_score'])
+# #Adding Score Difference relative to home team
+# df_plays["score_diff"] = (df_plays["home_score"] - df_plays['away_score'])
 
-df_plays.info()
-df_plays.describe()
+# df_plays.info()
+# df_plays.describe()
 ```
 
 # PRELIMINARY RESULTS
@@ -264,16 +264,16 @@ The summary table below shows key game statistics of 52,410 plays from the 2022 
 ```{python}
 #| echo: false
 # Counts of Plays per quarter
-(ggplot(df_plays, aes(x='factor(quarter)', fill='factor(down)')) +
-geom_bar()+
-labs(
-    x='Quarter',
-    y = "Number of Plays",
-    fill = "Down",
-    title = "Proportion of Downs per Quarters"
-) + 
-theme_minimal()
-)
+# (ggplot(df_plays, aes(x='factor(quarter)', fill='factor(down)')) +
+# geom_bar()+
+# labs(
+#     x='Quarter',
+#     y = "Number of Plays",
+#     fill = "Down",
+#     title = "Proportion of Downs per Quarters"
+# ) + 
+# theme_minimal()
+# )
 ```
 
 This stacked bar graph displays the number of plays as well as the proportion of downs across each quarter. We can see that there are more plays occurring in second and fourth quarter. Besides that, first and second down occurs more frequent compared to third and fourth down. Notice how there is more fourth down played in the fourth quarter compared to other quarters suggesting increased risk-taking drives attempted by teams. Another thing to highlight, is the low count in plays for 5th quarter as overtime don't happen often in NFL games.
@@ -281,15 +281,15 @@ This stacked bar graph displays the number of plays as well as the proportion of
 ```{python}
 #| echo: false
 # Distribution of Time Remaining in each quarter
-(ggplot(df_plays, aes(x='factor(quarter)', y='time_remaining')) +
-geom_boxplot()+
-labs(
-    x = "Time Remaining in Quarter (in seconds)",
-    y = "Quarters",
-    title = "Distribution of Time Remaining per Quarter"
-) + 
-theme_minimal()
-)
+# (ggplot(df_plays, aes(x='factor(quarter)', y='time_remaining')) +
+# geom_boxplot()+
+# labs(
+#     x = "Time Remaining in Quarter (in seconds)",
+#     y = "Quarters",
+#     title = "Distribution of Time Remaining per Quarter"
+# ) + 
+# theme_minimal()
+# )
 ```
 
 The distribution of time remaining within each quarter is balanced with plays occurring throughout the duration of the game. This suggests that plays are not are not concentrated in a certain time of the quarter and that our data is not skewed.
@@ -297,11 +297,11 @@ The distribution of time remaining within each quarter is balanced with plays oc
 ```{python}
 #| echo: false
 #Distribution of Yards To Endzone
-plt.hist(df_plays["yardsToEndzone"], bins=100)
-plt.xlabel("Yards to Enzone")
-plt.ylabel("Count")
-plt.title("Distribution of Yards To Endzone")
-plt.show()
+# plt.hist(df_plays["yardsToEndzone"], bins=100)
+# plt.xlabel("Yards to Enzone")
+# plt.ylabel("Count")
+# plt.title("Distribution of Yards To Endzone")
+# plt.show()
 ```
 
 Field position values are distributed across the field with more plays occurring at approximately 75 yards away from the end zone where most drives often begin.
@@ -309,15 +309,15 @@ Field position values are distributed across the field with more plays occurring
 ```{python}
 #| echo: false
 # Association between GameTime Remaining and Score Difference
-(ggplot(df_plays, aes(x='gametime_remaining', y='score_diff')) +
-geom_point(alpha=0.5)+
-labs(
-    x='Gametime Remaining (in Seconds)',
-    y = "Score Difference (relative to Home team)",
-    title = "Association between GameTime Remaining and Score Difference"
-) + 
-theme_minimal()
-)
+# (ggplot(df_plays, aes(x='gametime_remaining', y='score_diff')) +
+# geom_point(alpha=0.5)+
+# labs(
+#     x='Gametime Remaining (in Seconds)',
+#     y = "Score Difference (relative to Home team)",
+#     title = "Association between GameTime Remaining and Score Difference"
+# ) + 
+# theme_minimal()
+# )
 ```
 
 The association between the score difference and game time remaining seems to have a correlation where as game time decreases, the score differences tend to increase, reflecting the fact that games often become more decisive towards the end.
