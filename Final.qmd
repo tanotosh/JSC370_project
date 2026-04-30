@@ -681,6 +681,7 @@ y_test = test_data["home_wins"]
 
 ```{python}
 #| echo: false
+#| include: false
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import RandomizedSearchCV
 
@@ -705,6 +706,7 @@ cv_rf.fit(X_train, y_train)
 
 ```{python}
 #| echo: false
+#| include: false
 from xgboost import XGBClassifier
 
 param_dist = {
@@ -754,6 +756,7 @@ After the models were rebuild with the best combinations of hyperparameter above
 # RESULTS
 ```{python}
 #| echo: false
+#| include: false
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, confusion_matrix, ConfusionMatrixDisplay
 best_params_rf = cv_rf.best_params_
 
@@ -797,7 +800,7 @@ xgb_test_auc = roc_auc_score(y_test, y_prob_xgb)
 #| echo: false
 cm = confusion_matrix(y_test, y_pred_rf)
 cm_xgb = confusion_matrix(y_test, y_pred_xgb)
-fig, ax = plt.subplots(1, 2, figsize=(4, 2.5))
+fig, ax = plt.subplots(1, 2, figsize=(6.5, 3))
 
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Loss", "Win"])
 disp.plot(ax=ax[0], cmap='Blues', xticks_rotation=45)
@@ -817,7 +820,7 @@ The Confusion Matrices shows diagonals shows the accuracy of both models. With g
 
 ```{python}
 #| echo: false
-fig, ax = plt.subplots(1, 2, figsize=(4, 2.5))
+fig, ax = plt.subplots(1, 2, figsize=(6.5, 3))
 rf_importances = best_rf.feature_importances_
 
 imp_df_rf = pd.DataFrame({
