@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Final Project – NFL Win Probability</title>
+<title>Shannon Tanoto’s Final Project – NFL Win Probability</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -39,7 +39,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-ce55f7038190fcfe00358e56bf6a8d4c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-5880d71d822c982e82b713f0191b40e9.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -120,7 +120,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Final Project</h1>
+<h1 class="title">Shannon Tanoto’s Final Project</h1>
 </div>
 
 
@@ -674,8 +674,7 @@ test_data = test_data.merge(team_strength, left_on="defense_team", right_on="tea
 </tbody>
 </table>
 <p><strong>Table 4: Summary Table of Key Variables</strong></p>
-<pre class="{python}"><code>#| echo: false
-# Counts of Plays per quarter
+<pre class="{python}"><code># Counts of Plays per quarter
 (ggplot(train_data, aes(x='factor(quarter)', fill='factor(down)')) +
 geom_bar()+
 labs(
@@ -688,8 +687,7 @@ theme_minimal()
 )</code></pre>
 <p><strong>Figure 1: Proportion of Downs per Quarter</strong></p>
 <p>This stacked bar graph displays the number of plays as well as the proportion of downs across each quarter. We can see that there are more plays occurring in second and fourth quarter which might be because teams tend to hustle as they approach a turnover or end of the game. Besides that, first and second down occurs more frequent compared to third and fourth down which is expected as they represent the start of offensive drives. Notice how there is more fourth down played in the fourth quarter compared to other quarters suggesting increased risk-taking drives attempted by teams to get more points in the limited time left. Another thing to highlight, is the low count in plays for 5th quarter as overtime don’t happen often in NFL games. Hence, these findings suggests that both downs and quarters might influence win probability and thus are added as features of the model.</p>
-<pre class="{python}"><code>#| echo: false
-# Distribution of Time Remaining in each quarter
+<pre class="{python}"><code># Distribution of Time Remaining in each quarter
 (ggplot(train_data, aes(x='factor(quarter)', y='time_remaining')) +
 geom_boxplot()+
 labs(
@@ -701,7 +699,7 @@ theme_minimal()
 )</code></pre>
 <p><strong>Figure 2: Distribution of Time Remaining per Quarter</strong></p>
 <p>The distribution of time remaining within each quarter is balanced with plays occurring throughout the duration of the game. This suggests that plays are not are not concentrated in a certain time of the quarter and that our data is not skewed (it captures game states at all point in time of the game) . This is key for the model as it ensures that predictions can be made across all quarters of the game.</p>
-<pre class="{python}"><code>#| echo: false
+<pre class="{python}"><code>
 #Distribution of Yards To Endzone
 plt.hist(train_data["yardsToEndzone"], bins=100)
 plt.xlabel("Yards to Enzone")

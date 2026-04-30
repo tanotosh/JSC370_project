@@ -1,11 +1,26 @@
 ---
-title: "Final Project"
+title: "Shannon Tanoto's Final Project"
 format:
     html: default
-    pdf:  default
+    pdf:  
+        documentclass: article
+        keep-tex: false
+        geometry:
+            - top=0.75in
+            - bottom=0.75in
+            - left=0.75in
+            - right=0.75in
+        fig-width: 5
+        fig-height: 3.5
+        include-in-header:
+            text: |
+                \usepackage{setspace}
+                \singlespacing
+
 jupyter: python3
 execute:
     echo: false
+fontsize: 10pt
 ---
 # INTRODUCTION
 The aim of this project is to build a machine learning model that predicts the probability that a home team is going to win an NFL (National Football League) game given a current game state (features). A game state is described by statistics of a team's field position (yards to go, yards to endzone, yards gained), game's time remaining (quarter, time_remaining), and the score difference(home score, away score). Another key feature is the offensive and defensive team strengths based on each team's historical performance (offense strength and defense strength). All of these variables capture both the immediate context of the game and the relative strengths of the teams, and are leveraged by the model to predict the win probability (model's output). A binary target outcome, whether the home team wins the game, contributes to the model training as well. The model is trained on past data to predict the win probability at any point of time in the game, which can be valuable for fans, analysts, coaches or strategists seeking to better understand the game dynamics, evaluate team performance, and support real-time decision making in sports analytics.
@@ -518,7 +533,6 @@ The summary table below shows key game statistics of 52,410 plays from the 2022 
 **Table 4: Summary Table of Key Variables**
 
 ```{python}
-#| echo: false
 # Counts of Plays per quarter
 (ggplot(train_data, aes(x='factor(quarter)', fill='factor(down)')) +
 geom_bar()+
@@ -537,7 +551,6 @@ theme_minimal()
 This stacked bar graph displays the number of plays as well as the proportion of downs across each quarter. We can see that there are more plays occurring in second and fourth quarter which might be because teams tend to hustle as they approach a turnover or end of the game. Besides that, first and second down occurs more frequent compared to third and fourth down which is expected as they represent the start of offensive drives. Notice how there is more fourth down played in the fourth quarter compared to other quarters suggesting increased risk-taking drives attempted by teams to get more points in the limited time left. Another thing to highlight, is the low count in plays for 5th quarter as overtime don't happen often in NFL games. Hence, these findings suggests that both downs and quarters might influence win probability and thus are added as features of the model. 
 
 ```{python}
-#| echo: false
 # Distribution of Time Remaining in each quarter
 (ggplot(train_data, aes(x='factor(quarter)', y='time_remaining')) +
 geom_boxplot()+
@@ -555,7 +568,7 @@ theme_minimal()
 The distribution of time remaining within each quarter is balanced with plays occurring throughout the duration of the game. This suggests that plays are not are not concentrated in a certain time of the quarter and that our data is not skewed (it captures game states at all point in time of the game) . This is key for the model as it ensures that predictions can be made across all quarters of the game.
 
 ```{python}
-#| echo: false
+
 #Distribution of Yards To Endzone
 plt.hist(train_data["yardsToEndzone"], bins=100)
 plt.xlabel("Yards to Enzone")
