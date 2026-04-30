@@ -6,10 +6,10 @@ format:
         documentclass: article
         keep-tex: false
         geometry:
-            - top=0.75in
-            - bottom=0.75in
-            - left=0.75in
-            - right=0.75in
+            - top=0.25in
+            - bottom=0.25in
+            - left=0.25in
+            - right=0.25in
         fig-width: 5
         fig-height: 3.5
         include-in-header:
@@ -18,9 +18,7 @@ format:
                 \singlespacing
 
 jupyter: python3
-execute:
-    echo: false
-fontsize: 10pt
+fontsize: 8pt
 ---
 # INTRODUCTION
 The aim of this project is to build a machine learning model that predicts the probability that a home team is going to win an NFL (National Football League) game given a current game state (features). A game state is described by statistics of a team's field position (yards to go, yards to endzone, yards gained), game's time remaining (quarter, time_remaining), and the score difference(home score, away score). Another key feature is the offensive and defensive team strengths based on each team's historical performance (offense strength and defense strength). All of these variables capture both the immediate context of the game and the relative strengths of the teams, and are leveraged by the model to predict the win probability (model's output). A binary target outcome, whether the home team wins the game, contributes to the model training as well. The model is trained on past data to predict the win probability at any point of time in the game, which can be valuable for fans, analysts, coaches or strategists seeking to better understand the game dynamics, evaluate team performance, and support real-time decision making in sports analytics.
@@ -28,6 +26,7 @@ The aim of this project is to build a machine learning model that predicts the p
 # METHODS
 
 ```{python}
+#| echo: false
 #import libaries
 import requests
 import pandas as pd
@@ -74,6 +73,7 @@ Next, a different endpoint of the ESPN Public API was used to retrieve play-by-p
 **Table 2: Plays Dataset**
 
 ```{python}
+#| echo: false
 # Extracting 2022 NFL game data (need to run this cell block)
 # ESPN API configuration
 BASE_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/"
@@ -115,6 +115,7 @@ df_games_2022 = pd.DataFrame(games)
 ```
 
 ```{python}
+#| echo: false
 # Extracted 2022 play dataset named as nfl_plays_2022.csv in data folder (no need to run)
 #Extract Play-by-play
 # plays = []
@@ -165,10 +166,12 @@ df_games_2022 = pd.DataFrame(games)
 ```
 
 ```{python}
+#| echo: false
 # df_plays_2022.to_csv("nfl_plays_2022.csv", index = False)
 ```
 
 ```{python}
+#| echo: false
 # Extracting 2023 NFL game data (need to run this cell block)
 # ESPN API configuration
 BASE_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/"
@@ -210,6 +213,7 @@ df_games_2023 = pd.DataFrame(games)
 ```
 
 ```{python}
+#| echo: false
 # Extracted 2023 play dataset named as nfl_plays_2023.csv in data folder (no need to run)
 #Extract Play-by-play
 # plays = []
@@ -259,11 +263,13 @@ df_games_2023 = pd.DataFrame(games)
 # df_plays_2023 = pd.DataFrame(plays)
 ```
 
- ```{python}
+```{python}
+#| echo: false
 # df_plays_2023.to_csv("nfl_plays_2023.csv", index = False)
 ```
 
 ```{python}
+#| echo: false
 #import the plays dataset from the data folder
 train_data = pd.read_csv("data/nfl_plays_2022.csv")
 test_data = pd.read_csv("data/nfl_plays_2023.csv")
@@ -273,6 +279,7 @@ test_data = pd.read_csv("data/nfl_plays_2023.csv")
 First, notice that games dataset's column "id" corresponds to the plays dataset's column "gid". However, they have different variable types, so "gid" was converted to a string, matching "id". Since only the plays dataset was downloaded and may not align with potential API updates for the games dataset, we filter out any games that are not in the plays dataset using the "gid" set.
 
 ```{python}
+#| echo: false
 df_games_2022["id"] = df_games_2022["id"].astype(str)
 df_games_2023["id"] = df_games_2023["id"].astype(str)
 
@@ -302,6 +309,7 @@ However, the summary statistics table also show a minimum values of 0 for variab
 After filtering out irrelevant data, our datasets contains 52,410 and 48,376 meaningful plays for the training (2022) and testing (2023) datasets respectively.
 
 ```{python}
+#| echo: false
 #Train data
 #train_data.describe() #check for extreme data
 missing = train_data.isna().sum().to_frame("n_missing")
@@ -310,6 +318,7 @@ missing["pct_missing"] = (missing['n_missing']/len(train_data)).round(4)
 ```
 
 ```{python}
+#| echo: false
 #Train data
 train_data_a = train_data[train_data['down']==0]
 #display(train_data_a)
@@ -333,6 +342,7 @@ train_data_d = train_data[train_data['defense_team'].isna()]
 ```
 
 ```{python}
+#| echo: false
 #Train data
 # check if quarter is either 1, 2, 3, 4
 train_data = train_data[train_data['quarter'].isin([1,2,3,4,5])]
@@ -345,6 +355,7 @@ train_data = train_data.dropna(subset=["offense_team", "defense_team"])
 ```
 
 ```{python}
+#| echo: false
 #Test data
 #test_data.describe() #check for extreme data
 missing = test_data.isna().sum().to_frame("n_missing")
@@ -353,6 +364,7 @@ missing["pct_missing"] = (missing['n_missing']/len(test_data)).round(4)
 ```
 
 ```{python}
+#| echo: false
 #Test data
 test_data_a = test_data[test_data['down']==0]
 #display(test_data_a)
@@ -376,6 +388,7 @@ test_data_d = test_data[test_data['defense_team'].isna()]
 ```
 
 ```{python}
+#| echo: false
 #Test data
 # check if quarter is either 1, 2, 3, 4
 test_data = test_data[test_data['quarter'].isin([1,2,3,4,5])]
@@ -437,6 +450,7 @@ Together, these engineered varaibles provide more context of the game, improving
 **Table 3: Final Dataset**
 
 ```{python}
+#| echo: false
 #Train data
 #Feature Engineering
 #Adding variable of time remaning in game instead of in quarter
@@ -450,6 +464,7 @@ train_data["score_diff"] = (train_data["home_score"] - train_data['away_score'])
 ```
 
 ```{python}
+#| echo: false
 #Train data
 train_data["offense_team"] = train_data["offense_team"].astype(int).astype(str)
 train_data["defense_team"] = train_data["defense_team"].astype(int).astype(str)
@@ -482,6 +497,7 @@ train_data = train_data.merge(team_strength, left_on="defense_team", right_on="t
 ```
 
 ```{python}
+#| echo: false
 #Test data
 #Feature Engineering
 #Adding variable of time remaning in game instead of in quarter
@@ -495,6 +511,7 @@ test_data["score_diff"] = (test_data["home_score"] - test_data['away_score'])
 ```
 
 ```{python}
+#| echo: false
 #Test data
 test_data["offense_team"] = test_data["offense_team"].astype(int).astype(str)
 test_data["defense_team"] = test_data["defense_team"].astype(int).astype(str)
@@ -514,6 +531,7 @@ test_data = test_data.merge(team_strength, left_on="defense_team", right_on="tea
 ```
 
 ```{python}
+#| echo: false
 # train_data.to_csv("train_data.csv", index = False)
 # test_data.to_csv("test_data.csv", index = False)
 ```
@@ -533,8 +551,9 @@ The summary table below shows key game statistics of 52,410 plays from the 2022 
 **Table 4: Summary Table of Key Variables**
 
 ```{python}
+#| echo: false
 # Counts of Plays per quarter
-(ggplot(train_data, aes(x='factor(quarter)', fill='factor(down)')) +
+fig1=(ggplot(train_data, aes(x='factor(quarter)', fill='factor(down)')) +
 geom_bar()+
 labs(
     x='Quarter',
@@ -542,8 +561,10 @@ labs(
     fill = "Down",
     title = "Proportion of Downs per Quarter"
 ) + 
-theme_minimal()
+theme_minimal() +
+theme(figure_size=(4, 2.5), text=element_text(size=8))
 )
+fig1
 ```
 
 **Figure 1: Proportion of Downs per Quarter** 
@@ -551,16 +572,19 @@ theme_minimal()
 This stacked bar graph displays the number of plays as well as the proportion of downs across each quarter. We can see that there are more plays occurring in second and fourth quarter which might be because teams tend to hustle as they approach a turnover or end of the game. Besides that, first and second down occurs more frequent compared to third and fourth down which is expected as they represent the start of offensive drives. Notice how there is more fourth down played in the fourth quarter compared to other quarters suggesting increased risk-taking drives attempted by teams to get more points in the limited time left. Another thing to highlight, is the low count in plays for 5th quarter as overtime don't happen often in NFL games. Hence, these findings suggests that both downs and quarters might influence win probability and thus are added as features of the model. 
 
 ```{python}
+#| echo: false
 # Distribution of Time Remaining in each quarter
-(ggplot(train_data, aes(x='factor(quarter)', y='time_remaining')) +
+fig2=(ggplot(train_data, aes(x='factor(quarter)', y='time_remaining')) +
 geom_boxplot()+
 labs(
     x = "Time Remaining in Quarter (in seconds)",
     y = "Quarters",
     title = "Distribution of Time Remaining per Quarter"
 ) + 
-theme_minimal()
+theme_minimal()+
+theme(figure_size=(4, 2.5), text=element_text(size=8))
 )
+fig2
 ```
 
 **Figure 2: Distribution of Time Remaining per Quarter** 
@@ -568,7 +592,7 @@ theme_minimal()
 The distribution of time remaining within each quarter is balanced with plays occurring throughout the duration of the game. This suggests that plays are not are not concentrated in a certain time of the quarter and that our data is not skewed (it captures game states at all point in time of the game) . This is key for the model as it ensures that predictions can be made across all quarters of the game.
 
 ```{python}
-
+#| echo: false
 #Distribution of Yards To Endzone
 plt.hist(train_data["yardsToEndzone"], bins=100)
 plt.xlabel("Yards to Enzone")
@@ -584,15 +608,18 @@ Field position values are distributed across the field with more plays occurring
 ```{python}
 #| echo: false
 # Association between GameTime Remaining and Score Difference
-(ggplot(train_data, aes(x='gametime_remaining', y='score_diff')) +
+fig4=(ggplot(train_data, aes(x='gametime_remaining', y='score_diff')) +
 geom_point(alpha=0.5)+
 labs(
     x='Gametime Remaining (in Seconds)',
     y = "Score Difference (relative to Home team)",
     title = "Association between GameTime Remaining and Score Difference"
 ) + 
-theme_minimal()
+theme_minimal()+
+theme(figure_size=(4, 2.5), text=element_text(size=8))
 )
+
+fig4
 ```
 
 **Figure 4: Association between Gametime Remaining and Score Difference**
@@ -616,7 +643,7 @@ The model is trained on the training set (2022 NFL games) and will be evaluated 
 ### Hyperparameter Tuning
 
 To improve model performance, hyperparameters were tuned on the training set using 5-fold CV with random search. The following hyperparameters samples were considered:
- - Random Forest: 
+- Random Forest: 
     - max_features: features per split ('sqrt', 1/3, 0.5)
     - min_samples_leaf: minimum samples or observation in each leaf (1, 5, 10)   
     - n_estimators: number of trees (set to 200)
@@ -629,19 +656,20 @@ To improve model performance, hyperparameters were tuned on the training set usi
     - n_estimators: number of trees (set to 200)
 
 Here are the best hyperaparmeter combinations found for each model:
- - Random Forest: 
+- Random Forest: 
     - max_features: 'sqrt'
     - min_samples_leaf: 10 
     - n_estimators: 200
 
 - XGBoost: 
     - max_depth: 6
-    - learning_rate: 0.05  
+    - learning_rate: 0.05
     - reg_lambda: 1
     - reg_alpha: 0.1
     - n_estimators: 200
 
 ```{python}
+#| echo: false
 features = ['gametime_remaining',"quarter", 'down', 'yards_to_go', "yardsToEndzone", "offense_strength", "defense_strength", "score_diff"]
 
 X_train = train_data[features]
@@ -652,6 +680,7 @@ y_test = test_data["home_wins"]
 ```
 
 ```{python}
+#| echo: false
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import RandomizedSearchCV
 
@@ -661,20 +690,21 @@ param_grid = {
 }
 
 rf = RandomForestClassifier(
-    n_estimators=200, random_state=65, n_jobs =-1
+    n_estimators=200, random_state=65, n_jobs =1
 )
 cv_rf = RandomizedSearchCV(
-    rf, param_grid, cv=5, n_iter=10, n_jobs=-1,
+    rf, param_grid, cv=5, n_iter=10, n_jobs=1,
     scoring="roc_auc"
 )
 
 cv_rf.fit(X_train, y_train)
-print(f"Best params: "
-      f"{cv_rf.best_params_}")
+# print(f"Best params: "
+#       f"{cv_rf.best_params_}")
 
 ```
 
 ```{python}
+#| echo: false
 from xgboost import XGBClassifier
 
 param_dist = {
@@ -687,7 +717,7 @@ param_dist = {
 xgb = XGBClassifier(
     n_estimators=200, 
     random_state=65,
-    n_jobs=-1
+    n_jobs=1
  )
 
 xgb_search = RandomizedSearchCV(
@@ -697,14 +727,14 @@ xgb_search = RandomizedSearchCV(
     cv=5,  
     scoring= 'roc_auc', 
     random_state=65,
-    n_jobs=-1,
+    n_jobs=1,
     verbose=1
  )
 
 xgb_search.fit(X_train, y_train) 
 
 best_params_xgb = xgb_search.best_params_ 
-print('Best params:', best_params_xgb)
+# print('Best params:', best_params_xgb)
 ```
 
 ### Model Evaluation
@@ -723,11 +753,12 @@ After the models were rebuild with the best combinations of hyperparameter above
 
 # RESULTS
 ```{python}
+#| echo: false
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score, confusion_matrix, ConfusionMatrixDisplay
 best_params_rf = cv_rf.best_params_
 
 best_rf = RandomForestClassifier(
-    **best_params_rf, n_estimators = 200, random_state=65, n_jobs=-1
+    **best_params_rf, n_estimators = 200, random_state=65, n_jobs=1
 )
 
 best_rf.fit(X_train, y_train)
@@ -739,13 +770,13 @@ rf_test_acc = accuracy_score(y_test, y_pred_rf)
 rf_test_f1 = f1_score(y_test, y_pred_rf)
 rf_test_auc = roc_auc_score(y_test, y_prob_rf)
 
-print(f"Random Forest test accuracy: {rf_test_acc}")
-print(f"Random Forest test F1-score: {rf_test_f1}")
-print(f"Random Forest test AUC: {rf_test_auc}")
+# print(f"Random Forest test accuracy: {rf_test_acc}")
+# print(f"Random Forest test F1-score: {rf_test_f1}")
+# print(f"Random Forest test AUC: {rf_test_auc}")
 
 
 best_xgb = XGBClassifier(
-    **best_params_xgb, n_estimators = 200, random_state=65, n_jobs=-1
+    **best_params_xgb, n_estimators = 200, random_state=65, n_jobs=1
 )
 
 best_xgb.fit(X_train, y_train)
@@ -757,23 +788,24 @@ xgb_test_acc = accuracy_score(y_test, y_pred_xgb)
 xgb_test_f1 = f1_score(y_test, y_pred_xgb)
 xgb_test_auc = roc_auc_score(y_test, y_prob_xgb)
 
-print(f"XGBoost test accuracy: {xgb_test_acc}")
-print(f"XGBoost test F1-score: {xgb_test_f1}")
-print(f"XGBoost test AUC: {xgb_test_auc}")
+# print(f"XGBoost test accuracy: {xgb_test_acc}")
+# print(f"XGBoost test F1-score: {xgb_test_f1}")
+# print(f"XGBoost test AUC: {xgb_test_auc}")
 ```
 
 ```{python}
+#| echo: false
 cm = confusion_matrix(y_test, y_pred_rf)
 cm_xgb = confusion_matrix(y_test, y_pred_xgb)
-fig, ax = plt.subplots(1, 2, figsize=(10, 8))
+fig, ax = plt.subplots(1, 2, figsize=(4, 2.5))
 
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Loss", "Win"])
 disp.plot(ax=ax[0], cmap='Blues', xticks_rotation=45)
-ax[0].set_title("Random Forest Classification")
+ax[0].set_title("Random Forest Classification", fontsize=9)
 
 disp_xgb = ConfusionMatrixDisplay(confusion_matrix=cm_xgb, display_labels=["Loss", "Win"])
 disp_xgb.plot(ax=ax[1], cmap='Blues', xticks_rotation=45)
-ax[1].set_title("XGBoost Classification")
+ax[1].set_title("XGBoost Classification", fontsize=9)
 
 plt.tight_layout()
 plt.show()
@@ -784,7 +816,8 @@ The Confusion Matrices shows diagonals shows the accuracy of both models. With g
 
 
 ```{python}
-fig, ax = plt.subplots(1, 2, figsize=(10, 8))
+#| echo: false
+fig, ax = plt.subplots(1, 2, figsize=(4, 2.5))
 rf_importances = best_rf.feature_importances_
 
 imp_df_rf = pd.DataFrame({
@@ -800,10 +833,10 @@ imp_df_xgb = pd.DataFrame({
 }).sort_values('importance')
 
 ax[0].barh(imp_df_rf['feature'], imp_df_rf["importance"])
-ax[0].set_title("Random Forest")
+ax[0].set_title("Random Forest", fontsize=9)
 
 ax[1].barh(imp_df_xgb['feature'], imp_df_xgb["importance"])
-ax[1].set_title("XGBoost")
+ax[1].set_title("XGBoost", fontsize=9)
 
 plt.tight_layout()
 plt.show()
@@ -813,6 +846,7 @@ plt.show()
 The Feature Importance Graphs highlights the top most influential features for each model. We see both models have score difference as the more dominant variable, followed by team strengths then remaining game time. This shows that not only does game statistics influence the model, but also each team's relative strengths contributes meaningfully. 
 
 ```{python}
+#| echo: false
 comparison_c = pd.DataFrame({
     'Model': ['Random Forest', "XGBoost"],
     'Test Accuracy': [rf_test_acc, xgb_test_acc],
@@ -820,8 +854,6 @@ comparison_c = pd.DataFrame({
     'Test F1-Score': [rf_test_f1, xgb_test_f1],
     'Test AUC': [rf_test_auc, xgb_test_auc]
 })
-
-print(comparison_c.to_string(index=False))
 ```
 
 The final selected model is the Random Forest Classifier as it has a higher accuracy (0.698 vs 0.693) along with a higher F1-score (0.742 vs 0.739), indicating better balance between percision and recall, as well as higher AUC score (0.77 vs 0.76), making it more reliable in predicting both win and loss resutls.
@@ -833,7 +865,7 @@ Figure A, the plot shows how win probability of the home team (in this case, the
 
 Figure B highlights the difference in distrbution of predicted win probabilities among the different quarters. In the early quarters, win probabilities centers around 0.6, reflecting high uncertainty due to ample remaining time. As the game progresses, the distribution spreads out in third quarter (a more uniform distribution). Another apprarent insight is how the win probabtility in the fourth quarter concentrates in the two extreme values of 0 and 1, indicating increased certainty in game outcome as it gets closer to the end of the game and score differences becomes more influential. 
 
-Figure C illustrates the relationship between win probabiltiy and gametime remaining, highlighting the role of team's strength difference. At the early stages of the game, there are more extreme colour (purple or yellow) points towards the extreme values of 0 or 1, suggesting how the magnitude in strength difference influences the prediction of win probability. As the game progresses, the different colour points evens out, indiccating that team strength difference doesn't influence the win proabbitliy as much as early in the game. 
+Figure C illustrates the relationship between win probabiltiy and gametime remaining, highlighting the role of team's strength difference. At the early stages of the game, there are more extreme colour (purple or yellow) points towards the extreme values of 0 or 1, suggesting how the magnitude in strength difference influences the prediction of win probability. As the game progresses, the different colour points evens out, indicating that team strength difference doesn't influence the win probabitliy as much as early in the game. 
 
 
 # CONCLUSION & SUMMARY

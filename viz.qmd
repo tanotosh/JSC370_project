@@ -7,6 +7,7 @@ format:
 
 **INTERACTIVE VISUALIZATIONS: (HW5 with captions, brief summaries of each are in the final report's result section)**
 ```{python}
+#| echo: false
 import os
 import pandas as pd
 import plotly.express as px
@@ -26,7 +27,7 @@ X_test = test_data[features]
 y_test = test_data["home_wins"]
 
 best_rf = RandomForestClassifier(
-    max_features='sqrt', min_samples_leaf=10, n_estimators = 200, random_state=65, n_jobs=-1
+    max_features='sqrt', min_samples_leaf=10, n_estimators = 200, random_state=65, n_jobs=1
 )
 
 best_rf.fit(X_train, y_train)
@@ -37,6 +38,7 @@ game = test_data.copy()
 
 
 ```{python}
+#| echo: false
 data_1 = game[game['gid'] == 401547635].copy().sort_values("gametime_remaining", ascending=False)
 
 data_1['win_prob'] = best_rf.predict_proba(data_1[features])[:,1]
@@ -61,6 +63,7 @@ fig.show()
 Figure A: This plot shows an example of how the model's predicted win probability fluctuates throughout a single game. Here, it uses the NFL 2024 game of the San Francisco 49ers vs the Washington Commanders as an example. Each point represents a "game state" defined by features including score difference, field position and others (as can be seen when hovered). These are the features taken into account by the model to estimate the win probability at that time (or "gametime remaining").
 
 ```{python}
+#| echo: false
 data_2 = game.copy()
 data_2['win_prob']= best_rf.predict_proba(data_2[features])[:,1]
 
@@ -126,6 +129,7 @@ Figure B: The histogram compares the distribution of predicted win probabilities
 
 
 ```{python}
+#| echo: false
 data_3 = game.copy()
 data_3['win_prob'] = best_rf.predict_proba(data_3[features])[:,1]
 data_3['strength_diff'] = data_3['offense_strength'] - data_3['defense_strength']
@@ -147,7 +151,6 @@ fig.update_traces(
 )
 fig.update_layout(hovermode="closest")
 fig.show()
-
 ```
 
 Figure C: The plot shows the model's predicted win probability against gametime remaining with color representing the strength difference (difference of offense team's strength and defense team's strength) influencing the model's prediction. Observations with greater magnitude in strength difference, the closer the point is to the extreme values of 0 or 1, while points with smaller strength difference are more concentrated in aorund 0.5 which shows uncertainty.
